@@ -7,6 +7,7 @@ import { TrelloAPI } from "./trello_module";
 import { createStaticNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Board from './Board';
+import Card from './Card';
 
 const apiKey = process.env.REACT_APP_TRELLO_API_KEY;
 export const trelloAPI = new TrelloAPI(apiKey);
@@ -35,11 +36,10 @@ const Base = () => {
   };
 
   useEffect(() => {
-    // if (apiToken) {
-    //   console.log('Setting token', apiToken);
-    //   trelloAPI.setToken(apiToken);
-    //   fetchBoards();
-    // }
+    if (apiToken) {
+      trelloAPI.setToken(apiToken);
+      fetchBoards();
+    }
   }, [apiToken]);
 
   return (
@@ -83,13 +83,17 @@ const RootStack = createNativeStackNavigator({
       options: ({ route }: any) => ({
         title: route?.params?.name,
         animation: 'ios_from_right',
-        // headerRight: () => (
-        //   <Button title='Delete' onPress={() => {}} color='#2B2B2B' />
-        // )
       }),
-    }
+    },
+    Card: {
+      screen: Card,
+      options: ({ route }: any) => ({
+        title: `${route?.params?.name} | ${route?.params?.parentName}`,
+        animation: 'ios_from_right',
+      }),
+    },
   },
-})
+});
 
 const Navigation = createStaticNavigation(RootStack);
 

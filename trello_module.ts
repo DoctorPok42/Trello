@@ -38,7 +38,6 @@ export class TrelloAPI {
       options.body = JSON.stringify(body);
     }
 
-    console.log(`Requête ${method} ${url}`);
     let response = await fetch(url, options);
 
     // Gestion du rate limit (HTTP 429)
@@ -71,20 +70,34 @@ export class TrelloAPI {
     return this.makeRequest("DELETE", `/boards/${boardId}`);
   }
 
-  public async getLists(boardId: string): Promise<any> {
-    return this.makeRequest("GET", `/boards/${boardId}/lists`);
+  public async getBoardMembers(boardId: string): Promise<any> {
+    return this.makeRequest("GET", `/boards/${boardId}/members`);
   }
 
+  // Card
   public async getCards(listId: string): Promise<any> {
     return this.makeRequest("GET", `/boards/${listId}/cards`);
   }
 
-  public async addCard(
-    name: string,
-    description: string,
-    listId: string
-  ): Promise<any> {
-    const body = { name, desc: description, idList: listId };
-    return this.makeRequest("POST", "/cards", body);
+  public async getCard(cardId: string): Promise<any> {
+    return this.makeRequest("GET", `/cards/${cardId}`);
+  }
+
+  public async updateCard(cardId: string, body: any): Promise<any> {
+    return this.makeRequest("PUT", `/cards/${cardId}`, body);
+  }
+
+  public async deleteCard(cardId: string): Promise<any> {
+    return this.makeRequest("DELETE", `/cards/${cardId}`);
+  }
+
+  public async createCard(listId: string, name: string): Promise<any> {
+    const body = { name, idList: listId };
+    return this.makeRequest("POST", `/cards`, body);
+  }
+
+  // List
+  public async getLists(boardId: string): Promise<any> {
+    return this.makeRequest("GET", `/boards/${boardId}/lists`);
   }
 }

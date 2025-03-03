@@ -1,28 +1,35 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { IconButton, Tooltip } from 'react-native-paper';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
 
 interface AddButtonProps {
   onPress: () => void;
+  style?: any;
 }
 
 const AddButton = ({
   onPress,
+  style,
 }: AddButtonProps) => {
   return (
-    <View >
-      <Tooltip title="Add board" style={styles.tooltip}>
-        <IconButton icon="plus" selected size={45} onPress={onPress} iconColor="#fff" />
-      </Tooltip>
-    </View>
+    <TouchableOpacity style={[styles.floatingButton, style]} onPress={onPress}>
+      <FontAwesome name="plus" size={24} color="white" />
+    </TouchableOpacity>
   );
 };
 
 export default AddButton;
 
 const styles = StyleSheet.create({
-  tooltip: {
-    backgroundColor: '#6b8bfdb2',
-    borderRadius: 12,
+  floatingButton: {
+    position: 'absolute',
+    right: 5,
+    backgroundColor: '#007AFF',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
   },
 });

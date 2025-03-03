@@ -1,40 +1,54 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ScrollView, RefreshControl, Alert, Button } from 'react-native';
 import { trelloAPI } from './App';
-import { ActivityIndicator, Divider, Searchbar } from 'react-native-paper';
-import { AddButton } from './components';
+import { Modal, PaperProvider, Portal, Searchbar, TextInput } from 'react-native-paper';
+import { AddButton, Card } from './components';
+import { useNavigation } from '@react-navigation/native';
 
 interface BoardProps {
   route: any;
 }
 
-const WINDOW_WIDTH = Dimensions.get('window').width;
-
 const Board = ({
   route
 }: BoardProps) => {
+  const navigation = useNavigation() as any;
   const { id, name } = route.params;
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [lists, setLists] = useState<any[]>([]);
   const [cards, setCards] = useState<any[]>([]);
+  const [boardMembers, setBoardMembers] = useState<any[]>([]);
   const [savedCards, setSavedCards] = useState<any[]>([]);
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const containerStyle = {
+    backgroundColor: 'white',
+    padding: 10,
+    margin: 20,
+    borderRadius: 10,
+    width: Dimensions.get('window').width - 40,
+  };
 
   const fetchCards = async () => {
     try {
       setIsLoading(true);
-      // const responseLists = await trelloAPI.getLists(id);
-      // setLists(responseLists);
-
       const responseCards = await trelloAPI.getCards(id);
       setCards(responseCards);
       setSavedCards(responseCards);
+
+      const responseLists = await trelloAPI.getLists(id);
+      setLists(responseLists);
+
+      const responseMembers = await trelloAPI.getBoardMembers(id);
+      setBoardMembers(responseMembers);
     } catch (err: any) {
       console.log(err.message || 'Erreur inconnue');
     } finally {
       setIsLoading(false);
     }
   }
+
 
   useEffect(() => {
     fetchCards();
@@ -49,60 +63,116 @@ const Board = ({
     }
   }, [searchQuery]);
 
-  return (
-    <View style={styles.Board_container}>
-      <View style={styles.tooltip}>
-          <AddButton onPress={() => setVisible(true)} />
-      </View>
-      <View>
-        <Searchbar
-          placeholder="Search..."
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          onIconPress={() => {}}
-          style={{ marginHorizontal: 10, backgroundColor: '#fff', marginBottom: 10 }}
-        />
-      </View>
+  const onRefresh = async () => {
+    await fetchCards();
+  }
 
-      {isLoading
-        ?
-          <ActivityIndicator size={35} color="#0079BF" />
-        :
-      cards.map((card, index) => (
-        <View key={card.id + card.name} style={{ padding: 10 }}>
-          <View style={styles.header}>
-            {/* <FontAwesome name="icon-name" size={20} color="#4F8EF7" /> */}
-            {card.dueComplete ? <Text>✅</Text> : <Text>❌</Text>}
-            <Text style={styles.title}>{
-              card.name.length > 30
-                ? `${card.name.substring(0, 30)}...`
-                : card.name
-              }</Text>
+  const handleAddCard = async (name: string) => {
+    await trelloAPI.createCard(lists[0].id, name).then(() => {
+      setVisible(false);
+      setSearchQuery('');
+    });
+    onRefresh();
+  }
+
+  const handleDeleteCard = async (id: string) => {
+    await trelloAPI.deleteCard(id).then(() => {
+      onRefresh();
+    });
+  }
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      onRefresh();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  return (
+    <PaperProvider>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={onRefresh} colors={['#0079BF', '#D29034', '#519839', '#B04632', '#89609E']} />
+        }
+      >
+        <View style={styles.Board_container}>
+          <AddButton onPress={() => setVisible(true)} style={styles.floatingButton} />
+
+          <View>
+            <Searchbar
+              placeholder="Search..."
+              onChangeText={setSearchQuery}
+              value={searchQuery}
+              style={{ marginHorizontal: 10, backgroundColor: '#fff', marginBottom: 10 }}
+            />
           </View>
 
-          {<Divider />}
+          {cards.map((card, index) => (
+            <Card
+              key={card.id + index}
+              name={card.name}
+              dueDate={card.due}
+              dueComplete={card.dueComplete}
+              onCardPress={() => navigation.navigate('Card', { id: card.id, name: card.name, parentName: name, lists, cardParent: card, boardMembers })}
+              onLongPress={(name: string) => {
+                Alert.alert(
+                  'Delete card',
+                  `Are you sure you want to delete the card "${name}"?`,
+                  [
+                    {
+                      text: 'Cancel',
+                      onPress: null,
+                      style: 'cancel'
+                    },
+                    {
+                      text: 'Delete',
+                      onPress: () => { handleDeleteCard(card.id) }
+                    }
+                  ]
+                )
+              }}
+            />
+          ))}
+
+          {(cards.length === 0 && !!searchQuery) && (
+            <>
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>No cards found</Text>
+            <Button title='Create a card' onPress={() => setVisible(true)} color='#007AFF' />
+            </>
+          )}
+
+          <Portal>
+            <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={containerStyle}>
+              <TextInput mode="outlined" placeholder="Card name..." autoFocus onSubmitEditing={(e) => handleAddCard(e.nativeEvent.text)} />
+            </Modal>
+          </Portal>
         </View>
-      ))}
-    </View>
+      </ScrollView>
+    </PaperProvider>
   );
 };
 
+const WINDOW_HEIGHT = Dimensions.get('window').height;
+
 const styles = StyleSheet.create({
-  tooltip: {
-
-  },
-
   Board_container: {
     marginTop: 10,
     marginHorizontal: 10,
     paddingBottom: 10,
   },
 
+  floatingButton: {
+    top: WINDOW_HEIGHT - 150,
+    right: 10,
+  },
+
   header: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginBottom: 10,
     gap: 10,
   },
 
@@ -110,6 +180,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     overflow: 'hidden',
+  },
+
+  card: {
+    backgroundColor: '#f9f9f9',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    elevation: 2,
   }
 });
 
