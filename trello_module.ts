@@ -1,0 +1,90 @@
+export class TrelloAPI {
+  private key: string;
+  private token: string;
+  private baseUrl: string = "https://api.trello.com/1";
+  private minRequestDelay: number = 500;
+  private maxRequestDelay: number = 7000;
+
+  constructor(key: string) {
+    this.key = key;
+    this.token = "";
+  }
+
+  public async setToken(token: string) {
+    this.token = token;
+  }
+
+  private createQueryParams(
+    additionalParams: Record<string, any> = {}
+  ): string {
+    const params = { key: this.key, token: this.token, ...additionalParams };
+    return new URLSearchParams(params).toString();
+  }
+
+  private async makeRequest(
+    method: "GET" | "POST" | "PUT" | "DELETE",
+    path: string,
+    additionalParams: Record<string, any> = {},
+    body?: any
+  ): Promise<any> {
+    const url = `${this.baseUrl}${path}?${this.createQueryParams(
+      additionalParams
+    )}`;
+    const options: RequestInit = {
+      method,
+      headers: { "Content-Type": "application/json" },
+    };
+    if (body) {
+      options.body = JSON.stringify(body);
+    }
+
+    console.log(`Requête ${method} ${url}`);
+    let response = await fetch(url, options);
+
+    // Gestion du rate limit (HTTP 429)
+    if (response.status === 429) {
+      const delay =
+        Math.floor(
+          Math.random() * (this.maxRequestDelay - this.minRequestDelay)
+        ) + this.minRequestDelay;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return this.makeRequest(method, path, body, additionalParams);
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
+    }
+    return response.json();
+  }
+
+  // Board
+  public async getBoards(memberId: string): Promise<any> {
+    return this.makeRequest("GET", `/members/${memberId}/boards`);
+  }
+
+  public async createBoard(name: string): Promise<any> {
+    return this.makeRequest("POST", "/boards", { name });
+  }
+
+  public async deleteBoard(boardId: string): Promise<any> {
+    return this.makeRequest("DELETE", `/boards/${boardId}`);
+  }
+
+  public async getLists(boardId: string): Promise<any> {
+    return this.makeRequest("GET", `/boards/${boardId}/lists`);
+  }
+
+  public async getCards(listId: string): Promise<any> {
+    return this.makeRequest("GET", `/boards/${listId}/cards`);
+  }
+
+  public async addCard(
+    name: string,
+    description: string,
+    listId: string
+  ): Promise<any> {
+    const body = { name, desc: description, idList: listId };
+    return this.makeRequest("POST", "/cards", body);
+  }
+}
