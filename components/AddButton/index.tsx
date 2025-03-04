@@ -1,35 +1,30 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { FAB as Fab, Portal } from 'react-native-paper';
 
 interface AddButtonProps {
-  onPress: () => void;
-  style?: any;
+  options: any;
 }
 
 const AddButton = ({
-  onPress,
-  style,
+  options,
 }: AddButtonProps) => {
+   const [state, setState] = useState({ open: false });
+
+  const onStateChange = ({ open }) => setState({ open });
+
+  const { open } = state;
+
   return (
-    <TouchableOpacity style={[styles.floatingButton, style]} onPress={onPress}>
-      <FontAwesome name="plus" size={24} color="white" />
-    </TouchableOpacity>
+    <Portal>
+      <Fab.Group
+        open={open}
+        visible
+        icon={open ? 'arrow-up-bold-circle' : 'plus-circle'}
+        actions={options}
+        onStateChange={onStateChange}
+      />
+    </Portal>
   );
 };
 
 export default AddButton;
-
-const styles = StyleSheet.create({
-  floatingButton: {
-    position: 'absolute',
-    right: 5,
-    backgroundColor: '#007AFF',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
-  },
-});

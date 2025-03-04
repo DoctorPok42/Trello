@@ -20,7 +20,7 @@ const Board = ({
   const [cards, setCards] = useState<any[]>([]);
   const [boardMembers, setBoardMembers] = useState<any[]>([]);
   const [savedCards, setSavedCards] = useState<any[]>([]);
-  const [visible, setVisible] = useState<boolean>(false);
+  const [visible, setVisible] = useState<"card" | "list" | null>(null);
 
   const containerStyle = {
     backgroundColor: 'white',
@@ -67,12 +67,20 @@ const Board = ({
     await fetchCards();
   }
 
-  const handleAddCard = async (name: string) => {
-    await trelloAPI.createCard(lists[0].id, name).then(() => {
-      setVisible(false);
-      setSearchQuery('');
-    });
-    onRefresh();
+  const handleAdd = async (name: string) => {
+    if (visible === "list") {
+      await trelloAPI.createList(id, name).then(() => {
+        setVisible(null);
+        setSearchQuery('');
+      });
+      onRefresh();
+    } else if (visible === "card") {
+      await trelloAPI.createCard(lists[0].id, name).then(() => {
+        setVisible(null);
+        setSearchQuery('');
+      });
+      onRefresh();
+    }
   }
 
   const handleDeleteCard = async (id: string) => {
@@ -99,7 +107,10 @@ const Board = ({
         }
       >
         <View style={styles.Board_container}>
-          <AddButton onPress={() => setVisible(true)} style={styles.floatingButton} />
+          <AddButton options={[
+            { icon: "card-bulleted", label: 'Create card', onPress: () => setVisible("card") },
+            { icon: "format-list-bulleted", label: 'Create list', onPress: () => setVisible("list") },
+          ]} />
 
           <View>
             <Searchbar
@@ -110,43 +121,46 @@ const Board = ({
             />
           </View>
 
-          {cards.map((card, index) => (
-            <Card
-              key={card.id + index}
-              name={card.name}
-              dueDate={card.due}
-              dueComplete={card.dueComplete}
-              onCardPress={() => navigation.navigate('Card', { id: card.id, name: card.name, parentName: name, lists, cardParent: card, boardMembers })}
-              onLongPress={(name: string) => {
-                Alert.alert(
-                  'Delete card',
-                  `Are you sure you want to delete the card "${name}"?`,
-                  [
-                    {
-                      text: 'Cancel',
-                      onPress: null,
-                      style: 'cancel'
-                    },
-                    {
-                      text: 'Delete',
-                      onPress: () => { handleDeleteCard(card.id) }
-                    }
-                  ]
-                )
-              }}
-            />
+          {!isLoading && cards.map((card) => (
+            <View key={card.id}>
+              <Card
+                name={card.name}
+                dueDate={card.due}
+                dueComplete={card.dueComplete}
+                onCardPress={() => navigation.navigate('Card', { id: card.id, name: card.name, parentName: name, lists, cardParent: card, boardMembers })}
+                onLongPress={(name: string) => {
+                  Alert.alert(
+                    'Delete card',
+                    `Are you sure you want to delete the card "${name}"?`,
+                    [
+                      {
+                        text: 'Cancel',
+                        onPress: null,
+                        style: 'cancel'
+                      },
+                      {
+                        text: 'Delete',
+                        onPress: () => { handleDeleteCard(card.id) }
+                      }
+                    ]
+                  )
+                }}
+              />
+            </View>
           ))}
 
           {(cards.length === 0 && !!searchQuery) && (
             <>
             <Text style={{ textAlign: 'center', marginTop: 20 }}>No cards found</Text>
-            <Button title='Create a card' onPress={() => setVisible(true)} color='#007AFF' />
+            <Button title='Create a card' onPress={() => setVisible("card")} color='#007AFF' />
             </>
           )}
 
           <Portal>
-            <Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={containerStyle}>
-              <TextInput mode="outlined" placeholder="Card name..." autoFocus onSubmitEditing={(e) => handleAddCard(e.nativeEvent.text)} />
+            <Modal visible={visible !== null} onDismiss={() => setVisible(null)} contentContainerStyle={containerStyle}>
+              <TextInput mode="outlined" placeholder={
+                visible === "list" ? "List name..." : "Card name..."
+              } autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
             </Modal>
           </Portal>
         </View>

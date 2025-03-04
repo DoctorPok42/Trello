@@ -20,40 +20,16 @@ type Board = {
 const Base = () => {
   const [apiToken, setApiToken] = useState<string | null>(null);
   const [onLogin, setOnLogin] = useState<boolean>(true);
-  const [boards, setBoards] = useState<Board[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchBoards = async () => {
-    try {
-      const response = await trelloAPI.getBoards('me');
-      setBoards(response);
-    } catch (err: any) {
-      setError(err.message || 'Erreur inconnue');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    if (apiToken) {
+    if (apiToken)
       trelloAPI.setToken(apiToken);
-      fetchBoards();
-    }
   }, [apiToken]);
 
   return (
       <View style={styles.container}>
         {apiToken ? (
-          <>
-            {loading ? (
-              <ActivityIndicator size="large" color="#0000ff" />
-            ) : error ? (
-              <Text style={styles.errorText}>{error}</Text>
-            ) : (
-              <Home boards={boards} setBoards={setBoards} />
-            )}
-          </>
+          <Home />
         ) : (
           <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1, gap: 20 }}>
             <Text style={{ fontSize: 20 }}>Connectez-vous pour voir vos boards</Text>

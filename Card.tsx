@@ -6,7 +6,7 @@ import Status from './components/Card/status';
 import { Picker } from '@react-native-picker/picker';
 import { TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
-import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
+import { Calendar } from 'react-native-calendars';
 
 interface CardProps {
   route: any;
@@ -206,7 +206,7 @@ const Card = ({
         <Text style={styles.linkText}>View on Trello</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.linkButton, { backgroundColor: "#e74c3c" }]} onPress={() => {
+      <TouchableOpacity style={[styles.linkButton, { backgroundColor: "#e74c3c", marginBottom: 40 }]} onPress={() => {
         Alert.alert(
           `Delete card "${title}"`,
           'Are you sure you want to delete this card?',
@@ -301,12 +301,13 @@ const styles = StyleSheet.create({
   dueContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 15,
   },
   dueText: {
     marginLeft: 5,
     fontSize: 14,
     color: 'red',
+    fontWeight: 'bold',
   },
   dueCompleteText: {
     color: 'green',

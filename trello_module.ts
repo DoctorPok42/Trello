@@ -1,9 +1,9 @@
 export class TrelloAPI {
-  private key: string;
+  private readonly key: string;
   private token: string;
-  private baseUrl: string = "https://api.trello.com/1";
-  private minRequestDelay: number = 500;
-  private maxRequestDelay: number = 7000;
+  private readonly baseUrl: string = "https://api.trello.com/1";
+  private readonly minRequestDelay: number = 500;
+  private readonly maxRequestDelay: number = 7000;
 
   constructor(key: string) {
     this.key = key;
@@ -57,7 +57,7 @@ export class TrelloAPI {
     return response.json();
   }
 
-  // Board
+  // ----------------- Board -----------------
   public async getBoards(memberId: string): Promise<any> {
     return this.makeRequest("GET", `/members/${memberId}/boards`);
   }
@@ -74,7 +74,7 @@ export class TrelloAPI {
     return this.makeRequest("GET", `/boards/${boardId}/members`);
   }
 
-  // Card
+  // ----------------- Card -----------------
   public async getCards(listId: string): Promise<any> {
     return this.makeRequest("GET", `/boards/${listId}/cards`);
   }
@@ -96,8 +96,35 @@ export class TrelloAPI {
     return this.makeRequest("POST", `/cards`, body);
   }
 
-  // List
+  // ----------------- Workspace -----------------
+  public async createWorkspace(name: string): Promise<any> {
+    const body = { displayName: name };
+    return this.makeRequest("POST", "/organizations", body);
+  }
+
+  public async getWorkspaces(memberId: string): Promise<any> {
+    return this.makeRequest("GET", `/members/${memberId}/organizations`);
+  }
+
+  public async deleteWorkspace(workspaceId: string): Promise<any> {
+    return this.makeRequest("DELETE", `/organizations/${workspaceId}`);
+  }
+
+  public async renameWorkspace(
+    workspaceId: string,
+    name: string
+  ): Promise<any> {
+    const body = { displayName: name };
+    return this.makeRequest("PUT", `/organizations/${workspaceId}`, body);
+  }
+
+  // ----------------- List -----------------
   public async getLists(boardId: string): Promise<any> {
     return this.makeRequest("GET", `/boards/${boardId}/lists`);
+  }
+
+  public async createList(boardId: string, name: string): Promise<any> {
+    const body = { name, idBoard: boardId };
+    return this.makeRequest("POST", `/lists`, body);
   }
 }
