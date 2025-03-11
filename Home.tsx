@@ -22,7 +22,7 @@ const Home = () => {
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
   const [visible, setVisible] = useState<"Board" | "Workspace" | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(true);
   const [edit, setEdit] = useState<string | null>(null);
 
   const getWorkspaces = async () => {

@@ -37,10 +37,10 @@ const Base = () => {
           </View>
         )}
 
-        {onLogin && <Login onTokenReceived={(token) => {
+        {/* {onLogin && <Login onTokenReceived={(token) => {
           setApiToken(token);
           setOnLogin(false);
-        }} />}
+        }} />} */}
       </View>
   );
 }

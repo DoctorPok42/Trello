@@ -119,12 +119,21 @@ export class TrelloAPI {
   }
 
   // ----------------- List -----------------
-  public async getLists(boardId: string): Promise<any> {
-    return this.makeRequest("GET", `/boards/${boardId}/lists`);
-  }
-
   public async createList(boardId: string, name: string): Promise<any> {
     const body = { name, idBoard: boardId };
     return this.makeRequest("POST", `/lists`, body);
+  }
+
+  public async deleteList(listId: string): Promise<any> {
+    return this.makeRequest("PUT", `/lists/${listId}/closed`, { value: true });
+  }
+
+  public async updateList(listId: string, name: string): Promise<any> {
+    const body = { name };
+    return this.makeRequest("PUT", `/lists/${listId}`, body);
+  }
+
+  public async getLists(boardId: string): Promise<any> {
+    return this.makeRequest("GET", `/boards/${boardId}/lists`);
   }
 }

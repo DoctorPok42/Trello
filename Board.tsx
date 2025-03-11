@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Dimensions, ScrollView, RefreshControl, Alert, Button } from 'react-native';
 import { trelloAPI } from './App';
-import { Modal, PaperProvider, Portal, Searchbar, TextInput } from 'react-native-paper';
+import { List, Modal, PaperProvider, Portal, Searchbar, SegmentedButtons, TextInput } from 'react-native-paper';
 import { AddButton, Card } from './components';
 import { useNavigation } from '@react-navigation/native';
 
@@ -21,6 +21,9 @@ const Board = ({
   const [boardMembers, setBoardMembers] = useState<any[]>([]);
   const [savedCards, setSavedCards] = useState<any[]>([]);
   const [visible, setVisible] = useState<"card" | "list" | null>(null);
+  const [isEditing, setIsEditing] = useState<string | null>(null);
+  const [value, setValue] = useState<"card" | "list">('card');
+  const [listOpen, setListOpen] = useState<number>(-1);
 
   const containerStyle = {
     backgroundColor: 'white',
@@ -69,18 +72,24 @@ const Board = ({
 
   const handleAdd = async (name: string) => {
     if (visible === "list") {
-      await trelloAPI.createList(id, name).then(() => {
-        setVisible(null);
-        setSearchQuery('');
-      });
-      onRefresh();
+      if (isEditing) {
+        await trelloAPI.updateList(lists[0].id, name).then(() => {
+          setVisible(null);
+          setSearchQuery('');
+        });
+      } else {
+        await trelloAPI.createList(id, name).then(() => {
+          setVisible(null);
+          setSearchQuery('');
+        });
+      }
     } else if (visible === "card") {
       await trelloAPI.createCard(lists[0].id, name).then(() => {
         setVisible(null);
         setSearchQuery('');
       });
-      onRefresh();
     }
+    onRefresh();
   }
 
   const handleDeleteCard = async (id: string) => {
@@ -108,8 +117,8 @@ const Board = ({
       >
         <View style={styles.Board_container}>
           <AddButton options={[
-            { icon: "card-bulleted", label: 'Create card', onPress: () => setVisible("card") },
             { icon: "format-list-bulleted", label: 'Create list', onPress: () => setVisible("list") },
+            { icon: "card-bulleted", label: 'Create card', onPress: () => setVisible("card") },
           ]} />
 
           <View>
@@ -121,7 +130,30 @@ const Board = ({
             />
           </View>
 
-          {!isLoading && cards.map((card) => (
+          <SegmentedButtons
+            value={value}
+            onValueChange={setValue as any}
+            style={{
+              marginTop: 10,
+              marginHorizontal: 10,
+              marginBottom: 10,
+            }}
+            buttons={[
+              {
+                value: 'card',
+                label: 'Cards',
+                icon: 'card-bulleted',
+              },
+              {
+                value: 'list',
+                label: 'List',
+                icon: 'format-list-bulleted',
+
+              },
+            ]}
+          />
+
+          {(!isLoading && value === "card") && cards.map((card) => (
             <View key={card.id}>
               <Card
                 name={card.name}
@@ -149,6 +181,50 @@ const Board = ({
             </View>
           ))}
 
+          {(!isLoading && value === "list") && lists.map((list, index) => (
+            <View key={list.id}>
+              <List.Accordion
+                title={list.name}
+                style={{
+                  marginBottom: 10,
+                }}
+                left={(props) => <List.Icon {...props} icon="format-list-bulleted" />}
+                expanded={listOpen === index}
+                onPress={() => setListOpen(listOpen === index ? -1 : index)}
+              >
+                <List.Item
+                  title="Edit list"
+                  description="Edit the list name"
+                  left={props => <List.Icon {...props} icon="pencil" />}
+                  onPress={() => {
+                    setIsEditing(list.name);
+                    setVisible("list")
+                  }}
+                />
+                <List.Item
+                  title="Delete list"
+                  description="Delete the list"
+                  left={props => <List.Icon {...props} icon="delete" />}
+                  onPress={() => Alert.alert(
+                    'Delete list',
+                    `Are you sure you want to delete the list "${list.name}"?`,
+                    [
+                      {
+                        text: 'Cancel',
+                        onPress: null,
+                        style: 'cancel'
+                      },
+                      {
+                        text: 'Delete',
+                        onPress: () => { trelloAPI.deleteList(list.id).then(() => onRefresh()) }
+                      }
+                    ]
+                  )}
+                />
+              </List.Accordion>
+            </View>
+          ))}
+
           {(cards.length === 0 && !!searchQuery) && (
             <>
             <Text style={{ textAlign: 'center', marginTop: 20 }}>No cards found</Text>
@@ -158,9 +234,16 @@ const Board = ({
 
           <Portal>
             <Modal visible={visible !== null} onDismiss={() => setVisible(null)} contentContainerStyle={containerStyle}>
-              <TextInput mode="outlined" placeholder={
-                visible === "list" ? "List name..." : "Card name..."
-              } autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
+              <TextInput
+                mode="outlined"
+                placeholder={
+                  visible === "list" ? "List name" : "Card name"
+                }
+                {...(visible === "list" && { value: isEditing })}
+                {...isEditing && { onChangeText: setIsEditing }}
+                autoFocus
+                onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)}
+              />
             </Modal>
           </Portal>
         </View>
