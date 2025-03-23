@@ -5,13 +5,13 @@ import { List, Modal, PaperProvider, Portal, Searchbar, SegmentedButtons, TextIn
 import { AddButton, Card } from './components';
 import { useNavigation } from '@react-navigation/native';
 
-interface BoardProps {
+interface BoardPageProps {
   route: any;
 }
 
-const Board = ({
+const BoardPage = ({
   route
-}: BoardProps) => {
+}: BoardPageProps) => {
   const navigation = useNavigation() as any;
   const { id, name } = route.params;
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -288,4 +288,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Board;
+export default BoardPage;

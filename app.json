@@ -1,5 +1,10 @@
 {
   "expo": {
+    "scheme": "myapp",
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "name": "my-app",
     "slug": "my-app",
     "version": "1.0.0",
@@ -13,18 +18,32 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
       "bundleIdentifier": "com.doctorpok.myapp",
+      "supportsTablet": true,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
+      "package": "com.doctorpok.myapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.doctorpok.myapp"
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "myapp"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,6 +53,12 @@
         "projectId": "a84a569e-5ab3-4d26-bdbe-06ce679ae4e5"
       }
     },
-    "owner": "doctorpok"
+    "owner": "doctorpok",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a84a569e-5ab3-4d26-bdbe-06ce679ae4e5"
+    }
   }
 }
