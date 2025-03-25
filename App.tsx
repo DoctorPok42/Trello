@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Card from './Card';
 import { PaperProvider, Portal, Searchbar, TextInput, Modal } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
-import { AddButton, Board } from './components';
+import { AddButton, Board, Logout } from './components';
 import BoardPage from './Board';
 
 const apiKey = process.env.REACT_APP_TRELLO_API_KEY;
@@ -277,6 +277,9 @@ export default function App() {
             headerStyle: { backgroundColor: '#0079BF' },
             headerTintColor: '#fff',
             headerTitleStyle: { fontWeight: 'bold', fontSize: 25, color: '#fff' },
+            headerRight: () => (
+              <Logout />
+            ),
           }}
         />
         <RootStack.Screen
@@ -289,6 +292,9 @@ export default function App() {
             headerTitleStyle: { fontWeight: 'bold', fontSize: 25, color: '#fff' },
             headerStyle: { backgroundColor: '#0079BF' },
             headerTintColor: '#fff',
+            headerRight: () => (
+              <Logout />
+            ),
           })}
         />
         <RootStack.Screen
@@ -301,6 +307,9 @@ export default function App() {
             headerTitleStyle: { fontWeight: 'bold', fontSize: 25, color: '#fff' },
             headerStyle: { backgroundColor: '#0079BF' },
             headerTintColor: '#fff',
+            headerRight: () => (
+              <Logout />
+            ),
           })}
         />
       </RootStack.Navigator>
