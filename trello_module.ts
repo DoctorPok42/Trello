@@ -14,6 +14,13 @@ export class TrelloAPI {
     this.token = token;
   }
 
+  public async getToken(): Promise<string> {
+    if (!this.token) {
+      throw new Error("Token not set. Please authenticate first.");
+    }
+    return this.token;
+  }
+
   private createQueryParams(
     additionalParams: Record<string, any> = {}
   ): string {
@@ -62,8 +69,16 @@ export class TrelloAPI {
     return this.makeRequest("GET", `/members/${memberId}/boards`);
   }
 
-  public async createBoard(name: string): Promise<any> {
-    return this.makeRequest("POST", "/boards", { name });
+  public async createBoard(
+    name: string,
+    idOrganization: string,
+    idBoardSource?: string
+  ): Promise<any> {
+    return this.makeRequest("POST", "/boards", {
+      name,
+      idOrganization,
+      idBoardSource,
+    });
   }
 
   public async deleteBoard(boardId: string): Promise<any> {

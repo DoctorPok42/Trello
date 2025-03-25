@@ -6,7 +6,7 @@ import { TrelloAPI } from "./trello_module";
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Card from './Card';
-import { PaperProvider, Portal, Searchbar, TextInput, Modal } from 'react-native-paper';
+import { PaperProvider, Portal, Searchbar, TextInput, Modal, SegmentedButtons } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AddButton, Board, Logout } from './components';
 import BoardPage from './Board';
@@ -38,6 +38,8 @@ const Base = () => {
     const [workspaces, setWorkspaces] = useState<any[]>([]);
     const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
     const [visible, setVisible] = useState<"Board" | "Workspace" | null>(null);
+    const [boardCreationType, setBoardCreationType] = useState<string>("none");
+    const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [refreshing, setRefreshing] = useState<boolean>(true);
     const [edit, setEdit] = useState<string | null>(null);
@@ -60,11 +62,10 @@ const Base = () => {
 
     const handleAdd = async (name: string) =>  {
       if (visible === "Board") {
-        await trelloAPI.createBoard(name).then(() => {
-          Vibration.vibrate([0, 60, 0, 0]);
-        });
-        setVisible(null)
+        await trelloAPI.createBoard(name, selectedWorkspace || "", selectedTemplateId)
         getWorkspaces();
+        setVisible(null);
+        setBoardCreationType("none");
       } else if (visible === "Workspace") {
         await trelloAPI.createWorkspace(name)
         setVisible(null)
@@ -110,7 +111,6 @@ const Base = () => {
 
     const checkToken = async () => {
       const storedToken = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
-      console.log("Stored token:", storedToken);
       if (storedToken) {
         setToken(storedToken);
         setStart(false);
@@ -193,7 +193,60 @@ const Base = () => {
 
         <Portal>
           <Modal visible={!!visible} onDismiss={() => setVisible(null)} contentContainerStyle={containerStyle}>
-            <TextInput mode="outlined" placeholder={`${visible} name...`} autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
+            {visible === "Board" ? (
+              <View>
+                <SegmentedButtons
+                  value={boardCreationType}
+                  onValueChange={setBoardCreationType}
+                  style={{
+                    marginTop: 10,
+                    marginHorizontal: 10,
+                    marginBottom: 10,
+                  }}
+                  buttons={[
+                    {
+                      value: 'none',
+                      label: 'From scratch',
+                      icon: 'clipboard-plus-outline',
+                    },
+                    {
+                      value: 'template',
+                      label: 'From template',
+                      icon: 'clipboard-multiple-outline',
+
+                    },
+                  ]}
+                />
+
+                {boardCreationType === "template" && (
+                  <>
+                    <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}>Select a template</Text>
+                    <View style={{
+                      borderRadius: 5,
+                      marginTop: 10,
+                      backgroundColor: '#fff',
+                      marginBottom: 10,
+                      elevation: 3,
+
+                    }}>
+                      <Picker
+                        selectedValue={selectedTemplateId}
+                        onValueChange={(itemValue) => setSelectedTemplateId(itemValue)}
+                        mode='dialog'
+                        prompt="Select a template"
+                      >
+                        {boards.map(board => (
+                          <Picker.Item key={board.id} label={board.name} value={board.id} />
+                        ))}
+                      </Picker>
+                    </View>
+                  </>
+                )}
+                <TextInput mode="outlined" placeholder="Board name..." autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
+              </View>
+            ) : (
+              <TextInput mode="outlined" placeholder="Workspace name..." autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
+            )}
           </Modal>
 
           <Modal visible={!!edit} onDismiss={() => setEdit(null)} contentContainerStyle={containerStyle}>

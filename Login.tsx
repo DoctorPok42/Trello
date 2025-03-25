@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as Linking from "expo-linking";
 import { Button, Text } from 'react-native-paper';
@@ -10,8 +10,6 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({
   onTokenReceived
 }: LoginProps) => {
-  const [token, setToken] = useState<string | null>(null);
-
   useEffect(() => {
     const handleDeepLink = (event: Linking.EventType) => {
       try {
@@ -19,10 +17,7 @@ const Login: React.FC<LoginProps> = ({
         if (url.includes("token=")) {
           const params = new URLSearchParams(url.split("#")[1]);
           const token = params.get("token");
-          if (token) {
-            setToken(token);
-            onTokenReceived(token);
-          }
+          if (token) onTokenReceived(token);
         }
       } catch (error) {
         throw new Error("Erreur lors du traitement du lien profond : " + error);
@@ -31,6 +26,7 @@ const Login: React.FC<LoginProps> = ({
 
     const checkInitialUrl = async () => {
       const initialUrl = await Linking.getInitialURL();
+      console.log("Initial URL: ", initialUrl);
       if (initialUrl)
         handleDeepLink({ url: initialUrl });
     };
@@ -50,7 +46,7 @@ const Login: React.FC<LoginProps> = ({
     <View style={styles.container}>
       <Text variant="headlineLarge">Se connecter à Trello</Text>
       <Text variant="bodyLarge">Pour utiliser l'application, vous devez vous connecter à Trello.</Text>
-      <Button mode="contained" onPress={handleAuth}>Se connecter à Trello</Button>
+      <Button mode="contained" onPress={handleAuth} style={{ backgroundColor: "#0079BF" }}>Se connecter à Trello</Button>
     </View>
   );
 };
