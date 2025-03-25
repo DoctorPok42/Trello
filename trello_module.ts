@@ -81,6 +81,10 @@ export class TrelloAPI {
     });
   }
 
+  public async renameBoard(boardId: string, name: string): Promise<any> {
+    return this.makeRequest("PUT", `/boards/${boardId}`, { name });
+  }
+
   public async deleteBoard(boardId: string): Promise<any> {
     return this.makeRequest("DELETE", `/boards/${boardId}`);
   }

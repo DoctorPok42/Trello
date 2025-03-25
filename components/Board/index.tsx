@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, StyleSheet, Text, Dimensions, Pressable, Vibration } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Pressable } from 'react-native';
 
 interface BoardProps {
   board: any;
@@ -23,7 +23,7 @@ const Board = ({
 
   return (
     <Pressable
-      onLongPress={() => {handleLongPress(); Vibration.vibrate([0, 60, 0, 0])}}
+      onLongPress={handleLongPress}
       onPressOut={() => setIsLongPress(false)}
     >
       <View

@@ -43,6 +43,7 @@ const Base = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [refreshing, setRefreshing] = useState<boolean>(true);
     const [edit, setEdit] = useState<string | null>(null);
+    const [menuVisible, setMenuVisible] = useState<{ id, name} | null>(null);
 
     const getWorkspaces = async () => {
       try {
@@ -75,17 +76,40 @@ const Base = () => {
 
     const handleEdit = async (name: string) => {
       if (edit) {
-        await trelloAPI.renameWorkspace(selectedWorkspace, name)
+        if  (menuVisible) {
+          await trelloAPI.renameBoard(menuVisible.id, name);
+        } else {
+          await trelloAPI.renameWorkspace(selectedWorkspace, name);
+        }
         setEdit(null);
+        setVisible(null);
+        setSearchQuery('');
+        setMenuVisible(null);
         getWorkspaces();
       }
     }
 
     const handleDeleteBoard = async (id: string) => {
-      await trelloAPI.deleteBoard(id).then(() => {
-        Vibration.vibrate([0, 60, 0, 0]);
-      });
-      getWorkspaces();
+      setMenuVisible(null);
+      Alert.alert(
+        `Delete board "${boards.find(board => board.id === id)?.name}"`,
+        'Are you sure you want to delete this board?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Delete',
+            onPress: async () => {
+              await trelloAPI.deleteBoard(id).then(() => {
+                Vibration.vibrate([0, 60, 0, 0]);
+              });
+              getWorkspaces();
+            }
+          },
+        ],
+    );
     }
 
     useEffect(() => {
@@ -156,31 +180,37 @@ const Base = () => {
           }
         >
           <View style={styles.boardsContainer}>
-            <Text style={styles.title}>Your board{boards.length > 1 ? 's' : ''}</Text>
+            <Text style={styles.title}>Your board{boards.length > 0 && boards.find(board => board.idOrganization === selectedWorkspace) ? 's' : ''}</Text>
             {boards.map(board => {
               if (selectedWorkspace && board.idOrganization !== selectedWorkspace) return null;
               return (
-                <Board
-                  key={board.id}
-                  board={board}
-                  onPress={(id, name) => navigation.navigate('Board', { id, name })}
-                  onLongPress={(id, name) => {
-                    Alert.alert(
-                      `Delete board "${name}"`,
-                      'Are you sure you want to delete this board?',
-                      [
-                        {
-                          text: 'Cancel',
-                          style: 'cancel',
-                        },
-                        {
-                          text: 'Delete',
-                          onPress: () => { handleDeleteBoard(id); },
-                        },
-                      ],
-                    );
-                  }}
-                />
+                <View key={board.id}>
+                  <Menu
+                    key={board.id}
+                    visible={menuVisible?.id === board.id}
+                    onDismiss={() => setMenuVisible(null)}
+                    style={{
+                      marginLeft: Dimensions.get('window').width / 2 - 80,
+                    }}
+                    anchor={
+                      <Board
+                        board={board}
+                        onPress={(id, name) => navigation.navigate('Board', { id, name })}
+                          onLongPress={(id, name) => setMenuVisible({ id, name })}
+                      />
+                    }
+                  >
+                    <Menu.Item onPress={() => {
+                      setEdit(board.name);
+                    }} title="Edit board" leadingIcon="pencil" />
+                    <Menu.Item onPress={() => {
+                      navigation.navigate('Board', { id: board.id, name: board.name });
+                      setMenuVisible(null);
+                    }} title="View cards" leadingIcon="card-text" />
+                    <Divider />
+                    <Menu.Item onPress={() => handleDeleteBoard(board.id)} title="Delete board" leadingIcon="trash-can" />
+                  </Menu>
+                </View>
               )})}
 
             {((boards.length === 0 || boards.find(board => board.idOrganization === selectedWorkspace) === undefined) && !refreshing) &&
