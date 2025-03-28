@@ -161,7 +161,7 @@ const BoardPage = ({
             ]}
           />
 
-          {(!isLoading && value === "card") && cards.map((card) => (
+          {value === "card" && cards.map((card) => (
             <View key={card.id}>
               <Card
                 name={card.name}
@@ -189,7 +189,7 @@ const BoardPage = ({
             </View>
           ))}
 
-          {(!isLoading && value === "list") && lists.map((list, index) => (
+          {value === "list" && lists.map((list, index) => (
             <View key={list.id}>
               <List.Accordion
                 title={list.name}

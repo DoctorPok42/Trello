@@ -6,7 +6,7 @@ import { TrelloAPI } from "./trello_module";
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Card from './Card';
-import { PaperProvider, Portal, Searchbar, TextInput, Modal, SegmentedButtons } from 'react-native-paper';
+import { PaperProvider, Portal, Searchbar, TextInput, Modal, SegmentedButtons, Menu, Divider } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { AddButton, Board, Logout } from './components';
 import BoardPage from './Board';
@@ -45,12 +45,15 @@ const Base = () => {
     const [edit, setEdit] = useState<string | null>(null);
     const [menuVisible, setMenuVisible] = useState<{ id, name} | null>(null);
 
-    const getWorkspaces = async () => {
+    const getWorkspaces = async (islast?: boolean) => {
       try {
         setRefreshing(true);
         const response = await trelloAPI.getWorkspaces("me");
         setWorkspaces(response);
-        setSelectedWorkspace(selectedWorkspace || response[0].id);
+        if (islast)
+          setSelectedWorkspace(response[response.length - 1].id);
+        else
+          setSelectedWorkspace(selectedWorkspace || response[0].id);
 
         const responseBoards = await trelloAPI.getBoards("me");
         setBoards(responseBoards);
@@ -70,7 +73,7 @@ const Base = () => {
       } else if (visible === "Workspace") {
         await trelloAPI.createWorkspace(name)
         setVisible(null)
-        getWorkspaces();
+        getWorkspaces(true);
       }
     }
 
@@ -308,7 +311,7 @@ const Base = () => {
                     onPress: () => {
                       trelloAPI.deleteWorkspace(selectedWorkspace).then(() => {
                         Vibration.vibrate([0, 60, 0, 0]);
-                        getWorkspaces();
+                        setSelectedWorkspace(workspaces[0].id);
                       })
                     }
                   },
