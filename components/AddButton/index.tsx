@@ -20,8 +20,16 @@ const AddButton = ({
         open={open}
         visible
         icon={open ? 'arrow-up-bold-circle' : 'plus-circle'}
-        actions={options}
+        actions={
+          options.map((option: any) => ({
+            ...option,
+            color: '#fff',
+            style: { backgroundColor: "#0079BF" },
+          }))
+        }
         onStateChange={onStateChange}
+        color='#fff'
+        fabStyle={{ backgroundColor: '#0079BF' }}
       />
     </Portal>
   );

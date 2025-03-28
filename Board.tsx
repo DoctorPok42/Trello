@@ -138,6 +138,14 @@ const BoardPage = ({
               marginHorizontal: 10,
               marginBottom: 10,
             }}
+            theme={
+              {
+                colors: {
+                  secondaryContainer: '#0079BF',
+                  onSecondaryContainer: '#fff',
+                },
+              }
+            }
             buttons={[
               {
                 value: 'card',

@@ -233,6 +233,14 @@ const Base = () => {
                     marginHorizontal: 10,
                     marginBottom: 10,
                   }}
+                  theme={
+                    {
+                      colors: {
+                        secondaryContainer: '#0079BFa1',
+                        onSecondaryContainer: '#fff',
+                      },
+                    }
+                  }
                   buttons={[
                     {
                       value: 'none',
