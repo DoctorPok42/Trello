@@ -5,6 +5,7 @@ import { AddButton, Board } from './components';
 import { useNavigation } from '@react-navigation/native';
 import { trelloAPI } from './App';
 import { Picker } from '@react-native-picker/picker';
+import getWorkspaces from './lib/getWorkspaces';
 
 const containerStyle = {
   backgroundColor: 'white',
@@ -25,33 +26,27 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [edit, setEdit] = useState<string | null>(null);
 
-  const getWorkspaces = async () => {
-    try {
-      setRefreshing(true);
-      const response = await trelloAPI.getWorkspaces("me");
-      setWorkspaces(response);
-      setSelectedWorkspace(selectedWorkspace || response[0].id);
-
-      const responseBoards = await trelloAPI.getBoards("me");
-      setBoards(responseBoards);
-    } catch (err: any) {
-      console.log(err.message || 'Erreur inconnue');
-    } finally {
-      setRefreshing(false);
-    }
+  const handleCallWorkspaces = async () => {
+    setRefreshing(true);
+    await getWorkspaces(trelloAPI, setWorkspaces, selectedWorkspace, setSelectedWorkspace, setBoards);
+    setRefreshing(false);
   }
 
   const handleAdd = async (name: string) =>  {
     if (visible === "Board") {
-      await trelloAPI.createBoard(name).then(() => {
+      await trelloAPI.createBoard(
+        name,
+        selectedWorkspace || workspaces[0].id,
+        boards.find(board => board.name === name)?.id || undefined
+      ).then(() => {
         Vibration.vibrate([0, 60, 0, 0]);
       });
       setVisible(null)
-      getWorkspaces();
+      handleCallWorkspaces();
     } else if (visible === "Workspace") {
       await trelloAPI.createWorkspace(name)
       setVisible(null)
-      getWorkspaces();
+      handleCallWorkspaces();
     }
   }
 
@@ -59,7 +54,7 @@ const Home = () => {
     if (edit) {
       await trelloAPI.renameWorkspace(selectedWorkspace, name)
       setEdit(null);
-      getWorkspaces();
+      handleCallWorkspaces();
     }
   }
 
@@ -67,7 +62,7 @@ const Home = () => {
     await trelloAPI.deleteBoard(id).then(() => {
       Vibration.vibrate([0, 60, 0, 0]);
     });
-    getWorkspaces();
+    handleCallWorkspaces();
   }
 
   useEffect(() => {
@@ -75,12 +70,12 @@ const Home = () => {
       const filteredBoards = boards.filter(board => board.name.toLowerCase().includes(searchQuery.toLowerCase()));
       setBoards(filteredBoards);
     } else {
-      getWorkspaces();
+      handleCallWorkspaces();
     }
   }, [searchQuery]);
 
    useEffect(() => {
-    getWorkspaces();
+    handleCallWorkspaces();
    }, []);
 
   return (
@@ -112,7 +107,7 @@ const Home = () => {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={getWorkspaces} colors={['#0079BF', '#D29034', '#519839', '#B04632', '#89609E']} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleCallWorkspaces} colors={['#0079BF', '#D29034', '#519839', '#B04632', '#89609E']} />
           }
         >
           <View style={styles.boardsContainer}>
@@ -177,7 +172,7 @@ const Home = () => {
                     onPress: () => {
                       trelloAPI.deleteWorkspace(selectedWorkspace).then(() => {
                         Vibration.vibrate([0, 60, 0, 0]);
-                        getWorkspaces();
+                        handleCallWorkspaces();
                       })
                     }
                   },

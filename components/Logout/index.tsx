@@ -47,7 +47,7 @@ const Logout = () => {
     )
   };
 
-  // if (!isToken) return null;
+  if (!isToken) return null;
 
   return (
     <View>

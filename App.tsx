@@ -35,118 +35,106 @@ const Base = () => {
   const [start, setStart] = useState<boolean>(true);
   const [token, setToken] = useState<string | null>(null);
   const navigation = useNavigation() as any;
+  const [isAppReady, setIsAppReady] = useState<boolean>(false);
 
-    const [boards, setBoards] = useState<any[]>([]);
-    const [workspaces, setWorkspaces] = useState<any[]>([]);
-    const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
-    const [visible, setVisible] = useState<"Board" | "Workspace" | null>(null);
-    const [boardCreationType, setBoardCreationType] = useState<string>("none");
-    const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [refreshing, setRefreshing] = useState<boolean>(true);
-    const [edit, setEdit] = useState<string | null>(null);
-    const [menuVisible, setMenuVisible] = useState<{ id, name} | null>(null);
+  const [boards, setBoards] = useState<any[]>([]);
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
+  const [visible, setVisible] = useState<"Board" | "Workspace" | null>(null);
+  const [boardCreationType, setBoardCreationType] = useState<string>("none");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [refreshing, setRefreshing] = useState<boolean>(true);
+  const [edit, setEdit] = useState<string | null>(null);
+  const [menuVisible, setMenuVisible] = useState<{ id, name} | null>(null);
 
-    const getWorkspaces = async (islast?: boolean) => {
-      try {
-        setRefreshing(true);
-        const response = await trelloAPI.getWorkspaces("me");
-        setWorkspaces(response);
-        if (islast)
-          setSelectedWorkspace(response[response.length - 1].id);
-        else
-          setSelectedWorkspace(selectedWorkspace || response[0].id);
+  const handleCallWorkspaces = async (isLast?: boolean) => {
+    setRefreshing(true);
+    await getWorkspaces(trelloAPI, setWorkspaces, selectedWorkspace, setSelectedWorkspace, setBoards, isLast);
+    setRefreshing(false);
+  }
 
-        const responseBoards = await trelloAPI.getBoards("me");
-        setBoards(responseBoards);
-      } catch (err: any) {
-        console.log(err.message || 'Erreur inconnue');
-      } finally {
-        setRefreshing(false);
-      }
+  const handleAdd = async (name: string) =>  {
+    if (visible === "Board") {
+      await trelloAPI.createBoard(name, selectedWorkspace || "", selectedTemplateId)
+      getWorkspaces(trelloAPI, setWorkspaces, selectedWorkspace, setSelectedWorkspace, setBoards);
+      setBoardCreationType("none");
+    } else if (visible === "Workspace") {
+      await trelloAPI.createWorkspace(name)
+      setVisible(null)
+      handleCallWorkspaces(true);
     }
+  }
 
-    const handleAdd = async (name: string) =>  {
-      if (visible === "Board") {
-        await trelloAPI.createBoard(name, selectedWorkspace || "", selectedTemplateId)
-        getWorkspaces();
-        setVisible(null);
-        setBoardCreationType("none");
-      } else if (visible === "Workspace") {
-        await trelloAPI.createWorkspace(name)
-        setVisible(null)
-        getWorkspaces(true);
-      }
-    }
-
-    const handleEdit = async (name: string) => {
-      if (edit) {
-        if  (menuVisible) {
-          await trelloAPI.renameBoard(menuVisible.id, name);
-        } else {
-          await trelloAPI.renameWorkspace(selectedWorkspace, name);
-        }
-        setEdit(null);
-        setVisible(null);
-        setSearchQuery('');
-        setMenuVisible(null);
-        getWorkspaces();
-      }
-    }
-
-    const handleDeleteBoard = async (id: string) => {
-      setMenuVisible(null);
-      Alert.alert(
-        `Delete board "${boards.find(board => board.id === id)?.name}"`,
-        'Are you sure you want to delete this board?',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Delete',
-            onPress: async () => {
-              await trelloAPI.deleteBoard(id).then(() => {
-                Vibration.vibrate([0, 60, 0, 0]);
-              });
-              getWorkspaces();
-            }
-          },
-        ],
-    );
-    }
-
-    useEffect(() => {
-      if (searchQuery) {
-        const filteredBoards = boards.filter(board => board.name.toLowerCase().includes(searchQuery.toLowerCase()));
-        setBoards(filteredBoards);
+  const handleEdit = async (name: string) => {
+    if (edit) {
+      if  (menuVisible) {
+        await trelloAPI.renameBoard(menuVisible.id, name);
       } else {
-        getWorkspaces();
+        await trelloAPI.renameWorkspace(selectedWorkspace, name);
       }
-    }, [searchQuery]);
+      setEdit(null);
+      setVisible(null);
+      setSearchQuery('');
+      setMenuVisible(null);
+      handleCallWorkspaces(true);
+    }
+  }
+
+  const handleDeleteBoard = async (id: string) => {
+    setMenuVisible(null);
+    Alert.alert(
+      `Delete board "${boards.find(board => board.id === id)?.name}"`,
+      'Are you sure you want to delete this board?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            await trelloAPI.deleteBoard(id).then(() => {
+              Vibration.vibrate([0, 60, 0, 0]);
+            });
+            handleCallWorkspaces(true);
+          }
+        },
+      ],
+    );
+  }
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filteredBoards = boards.filter(board => board.name.toLowerCase().includes(searchQuery.toLowerCase()));
+      setBoards(filteredBoards);
+    } else {
+      handleCallWorkspaces(true);
+    }
+  }, [searchQuery]);
 
   const handleTokenReceived = async (token: string) => {
     trelloAPI.setToken(token);
     setStart(false);
-    getWorkspaces();
+    handleCallWorkspaces(true);
     await AsyncStorage.setItem(TOKEN_STORAGE_KEY, token);
   }
 
+  // Check if the token is already stored in AsyncStorage, if so, set it to the state and fetch workspaces, else show the login screen
+  const checkToken = async () => {
+    const storedToken = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
+    if (storedToken) {
+      setToken(storedToken);
+      setStart(false);
+      trelloAPI.setToken(storedToken);
+      handleCallWorkspaces(true);
+    }
+  }
   useEffect(() => {
     if (token) {
       handleTokenReceived(token);
     }
 
-    const checkToken = async () => {
-      const storedToken = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
-      if (storedToken) {
-        setToken(storedToken);
-        setStart(false);
-        trelloAPI.setToken(storedToken);
-        getWorkspaces();
-      }
-    }
     checkToken();
   }, [token]);
 
@@ -217,9 +205,10 @@ const Base = () => {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={getWorkspaces} colors={['#0079BF', '#D29034', '#519839', '#B04632', '#89609E']} />
+            <RefreshControl refreshing={refreshing} onRefresh={handleCallWorkspaces} colors={['#0079BF', '#D29034', '#519839', '#B04632', '#89609E']} />
           }
         >
+          {/* Display boards */}
           <View style={styles.boardsContainer}>
             <Text style={styles.title}>Your board{boards.length > 0 && boards.find(board => board.idOrganization === selectedWorkspace) ? 's' : ''}</Text>
             {boards.map(board => {
@@ -262,76 +251,19 @@ const Base = () => {
           </View>
         </ScrollView>
 
-        <Portal>
-          <Modal visible={!!visible} onDismiss={() => setVisible(null)} contentContainerStyle={containerStyle}>
-            {visible === "Board" ? (
-              <View>
-                <SegmentedButtons
-                  value={boardCreationType}
-                  onValueChange={setBoardCreationType}
-                  style={{
-                    marginTop: 10,
-                    marginHorizontal: 10,
-                    marginBottom: 10,
-                  }}
-                  theme={
-                    {
-                      colors: {
-                        secondaryContainer: '#0079BFa1',
-                        onSecondaryContainer: '#fff',
-                      },
-                    }
-                  }
-                  buttons={[
-                    {
-                      value: 'none',
-                      label: 'From scratch',
-                      icon: 'clipboard-plus-outline',
-                    },
-                    {
-                      value: 'template',
-                      label: 'From template',
-                      icon: 'clipboard-multiple-outline',
-
-                    },
-                  ]}
-                />
-
-                {boardCreationType === "template" && (
-                  <>
-                    <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}>Select a template</Text>
-                    <View style={{
-                      borderRadius: 5,
-                      marginTop: 10,
-                      backgroundColor: '#fff',
-                      marginBottom: 10,
-                      elevation: 3,
-
-                    }}>
-                      <Picker
-                        selectedValue={selectedTemplateId}
-                        onValueChange={(itemValue) => setSelectedTemplateId(itemValue)}
-                        mode='dialog'
-                        prompt="Select a template"
-                      >
-                        {boards.map(board => (
-                          <Picker.Item key={board.id} label={board.name} value={board.id} />
-                        ))}
-                      </Picker>
-                    </View>
-                  </>
-                )}
-                <TextInput mode="outlined" placeholder="Board name..." autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
-              </View>
-            ) : (
-              <TextInput mode="outlined" placeholder="Workspace name..." autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
-            )}
-          </Modal>
-
-          <Modal visible={!!edit} onDismiss={() => setEdit(null)} contentContainerStyle={containerStyle}>
-            <TextInput mode="outlined" autoFocus onSubmitEditing={(e) => handleEdit(e.nativeEvent.text)} value={edit} onChangeText={setEdit} />
-          </Modal>
-        </Portal>
+        <MenuPopup
+          visible={visible}
+          setVisible={setVisible}
+          handleAdd={handleAdd}
+          handleEdit={handleEdit}
+          edit={edit}
+          setEdit={setEdit}
+          boards={boards}
+          selectedTemplateId={selectedTemplateId}
+          setSelectedTemplateId={setSelectedTemplateId}
+          boardCreationType={boardCreationType}
+          setBoardCreationType={setBoardCreationType}
+        />
 
         <View style={styles.tooltip}>
           <AddButton options={[
