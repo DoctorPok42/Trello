@@ -5,6 +5,20 @@
       "ios",
       "android"
     ],
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0079BF",
+          "image": "./assets/icon.png",
+          "dark": {
+            "image": "./assets/icon.png",
+            "backgroundColor": "#0079BF"
+          },
+          "imageWidth": 200
+        }
+      ]
+    ],
     "name": "my-app",
     "slug": "my-app",
     "version": "1.0.0",

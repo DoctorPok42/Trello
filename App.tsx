@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Vibration, ScrollView, RefreshControl, Alert, Text, Dimensions } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, Vibration, ScrollView, RefreshControl, Alert, Text, Dimensions,ActivityIndicator } from 'react-native';
+import { PaperProvider, Searchbar, Menu, Divider } from 'react-native-paper';
 import Login from './Login';
 import { TrelloAPI } from "./trello_module";
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StatusBar } from 'expo-status-bar';
+import { AddButton, Board, Logout, MenuPopup } from './components';
 import Card from './Card';
-import { PaperProvider, Portal, Searchbar, TextInput, Modal, SegmentedButtons, Menu, Divider } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
-import { AddButton, Board, Logout } from './components';
 import BoardPage from './Board';
+import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import getWorkspaces from './lib/getWorkspaces';
+import * as SplashScreen from 'expo-splash-screen';
 
 const apiKey = process.env.REACT_APP_TRELLO_API_KEY;
 export const trelloAPI = new TrelloAPI(apiKey);
@@ -19,15 +22,14 @@ type Board = {
   name: string;
 };
 
-const containerStyle = {
-  backgroundColor: 'white',
-  padding: 10,
-  margin: 20,
-  borderRadius: 10,
-  width: Dimensions.get('window').width - 40,
-};
-
 const TOKEN_STORAGE_KEY = "trello_token";
+
+SplashScreen.preventAutoHideAsync();
+
+SplashScreen.setOptions({
+  duration: 200,
+  fade: true,
+});
 
 const Base = () => {
   const [start, setStart] = useState<boolean>(true);
@@ -148,8 +150,44 @@ const Base = () => {
     checkToken();
   }, [token]);
 
+  useEffect(() => {
+    async function prepareApp() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        // if token fetch workspaces else show login screen
+        const storedToken = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
+        if (storedToken) {
+          trelloAPI.setToken(storedToken);
+          setStart(false);
+          await handleCallWorkspaces(true);
+        } else {
+          setStart(true);
+        }
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsAppReady(true);
+      }
+    }
+    prepareApp();
+  }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (isAppReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [isAppReady]);
+
+  if (!isAppReady) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0079BF" />
+      </View>
+    );
+  }
+
   return (
-      <View style={styles.container}>
+      <View style={styles.container} onLayout={onLayoutRootView}>
         {!start ? (
         <PaperProvider>
         <View>
@@ -327,7 +365,7 @@ const Base = () => {
         ) : (
           <Login onTokenReceived={handleTokenReceived} />
       )}
-      </View>
+    </View>
   );
 }
 
@@ -361,6 +399,7 @@ const RootStack = createNativeStackNavigator({
 export default function App() {
   return (
     <NavigationContainer>
+      <StatusBar backgroundColor="#0079BF" style="light" />
       <RootStack.Navigator id={undefined}>
         <RootStack.Screen
           name="Home"
@@ -417,6 +456,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 5,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   errorText: {
     color: 'red',
