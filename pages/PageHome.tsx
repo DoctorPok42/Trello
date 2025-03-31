@@ -8,11 +8,7 @@ import ToastManager, { Toast } from "toastify-react-native";
 export const PageHome = () => {
   const navigation = useNavigation();
   
-  const handleCreateBoard = () => {
-    Alert.prompt("New board", "Type board's name.", async (name) => {
-      if (name) await createBoard(name) ? Toast.success("Board created.") : Toast.error("Error during board creation.")
-    });
-  }
+
 
   const handleCreateOrganization = async () => {
     Alert.prompt("New workspace", "Type workspace's name.", async (displayName) => {
