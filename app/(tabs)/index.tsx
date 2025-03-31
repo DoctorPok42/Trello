@@ -6,6 +6,8 @@ import { PageBoards } from '@/pages/PageBoards';
 import { PageWorkpaces } from '@/pages/PageWorspaces';
 import { Provider } from 'react-redux';
 import store from '@/store';
+import { PageCards } from '@/pages/PageCards';
+import { PageLists } from '@/pages/PageLists';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -15,8 +17,10 @@ const App = () => {
     <SafeAreaView style={styles.container}>
        <Stack.Navigator screenOptions={{ headerShown: false }}>
        <Stack.Screen name="PageHome" component={PageHome} /> 
-       <Stack.Screen name="PageBoards" component={PageBoards} /> 
        <Stack.Screen name="PageWorkspaces" component={PageWorkpaces} /> 
+       <Stack.Screen name="PageBoards" component={PageBoards} /> 
+       <Stack.Screen name="PageLists" component={PageLists} /> 
+       <Stack.Screen name="PageCards" component={PageCards} /> 
        </Stack.Navigator>
     </SafeAreaView>
     </Provider>
