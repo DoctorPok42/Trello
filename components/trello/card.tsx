@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 interface CardsProps {
-  title: string;
+  title?: string;
   onPress?: () => void;
 }
 
