@@ -1,5 +1,5 @@
 import { Cards } from "@/components/trello/card";
-import { createBoard } from "@/utils/trello/board";
+import { createBoard } from "@/utils/trello/boards";
 import { createOrganization } from "@/utils/trello/organizations";
 import { useNavigation } from "expo-router";
 import { View, Text, StyleSheet, Alert } from "react-native";
@@ -9,19 +9,16 @@ export const PageHome = () => {
   const navigation = useNavigation();
   
   const handleCreateBoard = () => {
-    Alert.prompt("Nouveau tableau", "Indiquez le nom du tableau.", (name) => {
-      if (name) {
-        createBoard(name) ? Toast.success("Tableau crée") : Toast.error("Tableau non crée.")
-      }
+    Alert.prompt("New board", "Type board's name.", async (name) => {
+      if (name) await createBoard(name) ? Toast.success("Board created.") : Toast.error("Error during board creation.")
     });
   }
 
-  const handleCreateOrganization = () => {
-    Alert.prompt("Nouvelle organisation", "Indiquez le nom de l'organisation.", (name) => {
-      if (name) {
-        const response = (createOrganization(name));
-        response ? Toast.success("Organisation crée") : Toast.error("Organisation non crée.")
-      }
+  const handleCreateOrganization = async () => {
+    Alert.prompt("New workspace", "Type workspace's name.", async (displayName) => {
+      let response = await createOrganization(displayName)
+      if (displayName)  response ? Toast.success("Workspace created") : Toast.error("Error during Workspace creation.")
+      if (response) navigation.navigate("PageWorkspaces" as never)
     });
   }
 
@@ -29,11 +26,10 @@ export const PageHome = () => {
     <>
       <ToastManager />
       <View style={styles.container}>
-        <Text style={styles.text}>Bienvenue</Text>
+        <Text style={styles.text}>Welcome</Text>
         <View>
-        <Cards title="Créer un tableau" onPress={handleCreateBoard}/>
-        <Cards title="Voir mes tableaux" onPress={() => navigation.navigate("PageBoards" as never)}/>
-        <Cards title="Créer une organisation" onPress={handleCreateOrganization}/>
+        <Cards title="My workspaces" onPress={() => navigation.navigate("PageWorkspaces" as never)}/>
+        <Cards title="Create a workspace" onPress={handleCreateOrganization}/>
         </View>
       </View>
     </>
@@ -42,9 +38,8 @@ export const PageHome = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    margin: 8,
-    backgroundColor: "#393E46",
+    flex: 1,
+    backgroundColor: "#1D2125",
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -55,3 +50,6 @@ const styles = StyleSheet.create({
     color: "#EEEEEE",
   },
 });
+
+{/* <Cards title="Create a board" onPress={handleCreateBoard}/>
+<Cards title="See all boards" onPress={() => navigation.navigate("PageBoards" as never)}/> */}
