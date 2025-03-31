@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Dimensions, ScrollView, RefreshControl, Alert, Button } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, ScrollView, RefreshControl, Alert, Vibration } from 'react-native';
 import { trelloAPI } from './App';
-import { List, Modal, PaperProvider, Portal, Searchbar, SegmentedButtons, TextInput } from 'react-native-paper';
+import { Dialog, List, Modal, PaperProvider, Portal, Searchbar, SegmentedButtons, TextInput, Button } from 'react-native-paper';
 import { AddButton, Card, Snackbar } from './components';
 import { useNavigation } from '@react-navigation/native';
 
@@ -25,6 +25,7 @@ const BoardPage = ({
   const [value, setValue] = useState<"card" | "list">('card');
   const [listOpen, setListOpen] = useState<number>(-1);
   const [alert, setAlert] = useState<{ visible: boolean, message: string }>({ visible: false, message: '' });
+  const [isDialogVisible, setIsDialogVisible] = useState<string | null>(null);
 
   const containerStyle = {
     backgroundColor: 'white',
@@ -99,6 +100,7 @@ const BoardPage = ({
   const handleDeleteCard = async (id: string) => {
     await trelloAPI.deleteCard(id).then(() => {
       setAlert({ visible: true, message: 'Card deleted successfully' });
+      Vibration.vibrate([0, 60, 0, 0])
       onRefresh();
     });
   }
@@ -122,7 +124,8 @@ const BoardPage = ({
         }
       >
         <View style={styles.Board_container}>
-          <AddButton options={[
+          <AddButton
+            options={[
             { icon: "format-list-bulleted", label: 'Create list', onPress: () => setVisible("list") },
             { icon: "card-bulleted", label: 'Create card', onPress: () => setVisible("card") },
           ]} />
@@ -132,7 +135,7 @@ const BoardPage = ({
               placeholder="Search..."
               onChangeText={setSearchQuery}
               value={searchQuery}
-              style={{ marginHorizontal: 10, backgroundColor: '#fff', marginBottom: 10 }}
+              style={{ marginHorizontal: 10, backgroundColor: '#fff', marginBottom: 10, marginTop: 15 }}
             />
           </View>
 
@@ -147,8 +150,9 @@ const BoardPage = ({
             theme={
               {
                 colors: {
-                  secondaryContainer: '#0079BF',
+                  secondaryContainer: 'rgba(0, 121, 191, 0.4)',
                   onSecondaryContainer: '#fff',
+                  outline: "#0079BF"
                 },
               }
             }
@@ -162,7 +166,6 @@ const BoardPage = ({
                 value: 'list',
                 label: 'List',
                 icon: 'format-list-bulleted',
-
               },
             ]}
           />
@@ -195,46 +198,45 @@ const BoardPage = ({
             </View>
           ))}
 
-          {value === "list" && lists.map((list, index) => (
-            <View key={list.id}>
+          {(value === "list" && !(cards.length === 0 && !!searchQuery)) && lists.map((list, index) => (
+            <View key={list.id} style={{ marginHorizontal: 10 }}>
               <List.Accordion
-                title={list.name}
+                title={list.name + ` (${cards.filter((card) => card.idList === list.id).length})`}
                 style={{
                   marginBottom: 10,
                 }}
                 left={(props) => <List.Icon {...props} icon="format-list-bulleted" />}
                 expanded={listOpen === index}
                 onPress={() => setListOpen(listOpen === index ? -1 : index)}
+                onLongPress={() => setIsDialogVisible(list.name)}
+                theme={{
+                  colors: {
+                    primary: '#0079BF',
+                  },
+                }}
               >
-                <List.Item
-                  title="Edit list"
-                  description="Edit the list name"
-                  left={props => <List.Icon {...props} icon="pencil" />}
-                  onPress={() => {
-                    setIsEditing(list.name);
-                    setVisible("list")
-                  }}
-                />
-                <List.Item
-                  title="Delete list"
-                  description="Delete the list"
-                  left={props => <List.Icon {...props} icon="delete" />}
-                  onPress={() => Alert.alert(
-                    'Delete list',
-                    `Are you sure you want to delete the list "${list.name}"?`,
-                    [
-                      {
-                        text: 'Cancel',
-                        onPress: null,
-                        style: 'cancel'
-                      },
-                      {
-                        text: 'Delete',
-                        onPress: () => { trelloAPI.deleteList(list.id).then(() => onRefresh()) }
-                      }
-                    ]
-                  )}
-                />
+                {cards.filter((card) => card.idList === list.id).map((card) => (
+                  <List.Item
+                    key={card.id}
+                    title={card.name}
+                    titleStyle={{
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      color: card.dueComplete ? '#155724' : '#721c24',
+                    }}
+                    description={card.desc}
+                    onPress={() => navigation.navigate('Card', { id: card.id, name: card.name, parentName: name, lists, cardParent: card, boardMembers })}
+                    left={(props) => <List.Icon {...props} icon="card-bulleted" color={card.dueComplete ? '#155724' : '#721c24'} />}
+                    style={{
+                      backgroundColor: card.dueComplete ? '#d4edda' : '#f8d7da',
+                      marginHorizontal: 10,
+                      marginVertical: 5,
+                      borderRadius: 5,
+                      padding: 10,
+                      elevation: 2,
+                    }}
+                  />
+                ))}
               </List.Accordion>
             </View>
           ))}
@@ -242,7 +244,9 @@ const BoardPage = ({
           {(cards.length === 0 && !!searchQuery) && (
             <>
             <Text style={{ textAlign: 'center', marginTop: 20 }}>No cards found</Text>
-            <Button title='Create a card' onPress={() => setVisible("card")} color='#007AFF' />
+            <Button onPress={() => setVisible("card")} buttonColor='#0079BF' mode="contained" style={{ marginTop: 10, marginHorizontal: 80 }}>
+              Create a card
+            </Button>
             </>
           )}
 
@@ -261,6 +265,43 @@ const BoardPage = ({
             </Modal>
           </Portal>
         </View>
+
+        {/* Popup dialog for list actions */}
+        <Dialog
+          visible={!!isDialogVisible}
+          onDismiss={() => setIsDialogVisible(null)}
+        >
+          <Dialog.Title>Actions for list</Dialog.Title>
+          <Dialog.Content>
+            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{isDialogVisible}</Text>
+            <Text>What do you want to do with this list?</Text>
+          </Dialog.Content>
+
+          <Dialog.Actions>
+            <Button onPress={() => {
+              Alert.alert(
+                'Delete list',
+                `Are you sure you want to delete the list "${isDialogVisible}"?`,
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: null,
+                    style: 'cancel'
+                  },
+                  {
+                    text: 'Delete',
+                    onPress: () => { trelloAPI.deleteList(lists.find((list) => list.name === isDialogVisible)?.id).then(() => onRefresh()) }
+                  }
+                ]
+              )
+            }} mode="text" textColor="#721c24">Delete</Button>
+            <Button onPress={() => {
+              setIsDialogVisible(null);
+              setVisible("list")
+              setIsEditing(isDialogVisible);
+            }} mode="text" textColor="#0079BF">Edit</Button>
+          </Dialog.Actions>
+        </Dialog>
       </ScrollView>
     </PaperProvider>
 
