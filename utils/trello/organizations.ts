@@ -1,25 +1,24 @@
-const id = process.env.ID;
-const key = process.env.KEY;
-const token = process.env.TOKEN;
+const id = process.env.EXPO_PUBLIC_REACT_APP_ID;
+const APIKey = process.env.EXPO_PUBLIC_REACT_APP_KEY;
+const APIToken = process.env.EXPO_PUBLIC_REACT_APP_TOKEN;
 
-export const createOrganization = (name: string) => {
-  const url = `https://api.trello.com/1/organizations/${id}?key=${key}&token=${token}`;
+export const createOrganization = async (displayName:string) => {
+  const url = `https://api.trello.com/1/organizations?displayName=${displayName}&key=${APIKey}&token=${APIToken}`;
   const params = { method: "POST", headers: { Accept: "application/json" } };
-  let res = false;
 
-  fetch(url, params)
-    .then((response) => {
-        console.log("createOrganization response => " , response.status, response.statusText);
-        res = true;
-    })
-    .then((text) => console.log(text))
-    .catch((err) => { res = false });
-    return res;
+  try {
+    const response = await fetch(url, params);
+    if (response.status === 200) return true;
+    else return false;
+  } catch (err) {
+    console.log("[OGZ1] - ", err);
+    return false;
+  }
 };
 
 export const getOrganization = () => {
   let organization = null;
-  const url = `https://api.trello.com/1/organizations/${id}?key=${key}&token=${token}`;
+  const url = `https://api.trello.com/1/organizations/${id}?key=${APIKey}&token=${APIToken}`;
   const params = { method: "GET", headers: { Accept: "application/json" } };
 
   try {
