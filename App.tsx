@@ -77,7 +77,7 @@ const Base = () => {
       } else {
         await trelloAPI.renameWorkspace(selectedWorkspace, name);
       }
-      setAlert({ visible: true, message: `Workspace "${name}" updated` });
+      setAlert({ visible: true, message: `${menuVisible ? "Board" : "Workspace"} ${name} updated` });
       setEdit(null);
       setVisible(null);
       setSearchQuery('');
@@ -100,6 +100,8 @@ const Base = () => {
           text: 'Delete',
           onPress: async () => {
             await trelloAPI.deleteBoard(id).then(() => {
+              setAlert({ visible: true, message: `Board "${boards.find(board => board.id === id)?.name}" deleted` });
+              setSearchQuery('');
               Vibration.vibrate([0, 60, 0, 0]);
             });
             handleCallWorkspaces(true);
@@ -267,29 +269,31 @@ const Base = () => {
         />
 
         <View style={styles.tooltip}>
-          <AddButton options={[
-            { icon: 'trash-can', label: 'Delete Workspace', onPress: () => {
-              Alert.alert(
-                'Delete Workspace',
-                'Are you sure you want to delete this workspace?',
-                [
-                  {
-                    text: 'Cancel',
-                    style: 'cancel',
-                  },
-                  {
-                    text: 'Delete',
-                    onPress: async () => {
-                      await trelloAPI.deleteWorkspace(selectedWorkspace).then(() => {
-                        Vibration.vibrate([0, 60, 0, 0]);
-                        setSelectedWorkspace(workspaces[0].id);
-                        setAlert({ visible: true, message: `Workspace successfully deleted` });
-                      })
-                    }
-                  },
-                ],
-              );
-            } },
+          <AddButton
+            label='Manage boards/workspaces'
+            options={[
+              { icon: 'trash-can', label: 'Delete Workspace', onPress: () => {
+                Alert.alert(
+                  'Delete Workspace',
+                  'Are you sure you want to delete this workspace?',
+                  [
+                    {
+                      text: 'Cancel',
+                      style: 'cancel',
+                    },
+                    {
+                      text: 'Delete',
+                      onPress: async () => {
+                        await trelloAPI.deleteWorkspace(selectedWorkspace).then(() => {
+                          setAlert({ visible: true, message: `Workspace successfully deleted` });
+                          Vibration.vibrate([0, 60, 0, 0]);
+                          setSelectedWorkspace(workspaces[0].id);
+                        })
+                      }
+                    },
+                  ],
+                );
+              }},
             { icon: 'pen', label: 'Edit Workspace', onPress: () => setEdit(workspaces.find(workspace => workspace.id === selectedWorkspace)?.displayName) },
             { icon: "table", label: 'Create workspace', onPress: () => setVisible("Workspace") },
             { icon: "bulletin-board", label: 'Create board', onPress: () => setVisible("Board") },

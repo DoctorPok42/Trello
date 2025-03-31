@@ -3,10 +3,12 @@ import { FAB as Fab, Portal } from 'react-native-paper';
 
 interface AddButtonProps {
   options: any;
+  label?: string;
 }
 
 const AddButton = ({
   options,
+  label,
 }: AddButtonProps) => {
    const [state, setState] = useState({ open: false });
 
@@ -19,6 +21,7 @@ const AddButton = ({
       <Fab.Group
         open={open}
         visible
+        {...label && { label }}
         icon={open ? 'arrow-up-bold-circle' : 'plus-circle'}
         actions={
           options.map((option: any) => ({

@@ -53,8 +53,9 @@ const MenuPopup = ({
               theme={
                 {
                   colors: {
-                    secondaryContainer: '#0079BFa1',
+                    secondaryContainer: 'rgba(0, 121, 191, 0.4)',
                     onSecondaryContainer: '#fff',
+                    outline: "#0079BF"
                   },
                 }
               }

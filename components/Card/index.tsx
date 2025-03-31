@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, Pressable, Vibration } from 'react-native';
+import { View, StyleSheet, Text, Pressable } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import Status from './status';
 
@@ -33,7 +33,7 @@ const Card = ({
       onTouchEnd={handlePress}
     >
       <Pressable
-        onLongPress={() => {handleLongPress(); Vibration.vibrate([0, 60, 0, 0])}}
+        onLongPress={handleLongPress}
         onPressOut={() => setIsLongPress(false)}
       >
         <Text style={styles.cardTitle}>{name}</Text>
