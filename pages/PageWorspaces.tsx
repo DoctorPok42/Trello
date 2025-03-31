@@ -13,13 +13,12 @@ export const PageWorkpaces = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch()
 
-
   const fetchOrganizations = async () => {
     const responseData = await getOrganization();
     if (responseData) setWorkspaces(responseData);
   };
 
-  const handleStoreOrganizationDataRedirectBoard = (workspaceId: string) => {
+  const handleSelectOrganization = (workspaceId: string) => {
     dispatch(setOrganizationData({
         ...organization,
         id: workspaceId,
@@ -36,7 +35,7 @@ export const PageWorkpaces = () => {
       <Text style={styles.text}>My workspaces</Text>
       <View>
         {workspaces?.map((workspace, index) => (
-          <Cards title={workspace.displayName} key={index} onPress={() => handleStoreOrganizationDataRedirectBoard(workspace.id)}/>
+          <Cards title={workspace.displayName} key={index} onPress={() => handleSelectOrganization(workspace.id)}/>
         ))}
       </View>
     </View>
