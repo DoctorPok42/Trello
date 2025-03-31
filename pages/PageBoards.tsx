@@ -1,8 +1,9 @@
 import { Cards } from "@/components/trello/card";
 import store from "@/store";
-import { getBoards } from "@/utils/trello/boards";
+import { createBoard, createBoardByOrganizationId, getBoards } from "@/utils/trello/boards";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert } from "react-native";
+import { Toast } from "toastify-react-native";
 
 export const PageBoards = () => {
   const [boards, setBoards] = useState<any[]>();
@@ -13,6 +14,13 @@ export const PageBoards = () => {
       if (responseData) setBoards(responseData);
     };
   
+    const handleCreateBoard = () => {
+      Alert.prompt("New board", "Type board's name.", async (name) => {
+        if (name) await createBoardByOrganizationId(name, organizationId) 
+          ? Toast.success("Board created.") : Toast.error("Error during board creation.")
+      });
+    }
+    
     useEffect(() => {
       fetchBoards();
     }, []);
@@ -23,6 +31,7 @@ export const PageBoards = () => {
       {boards?.map((board, index) => (
         <Cards title={board.name} key={index}/>
       ))}
+      <Cards title="Create a board" onPress={handleCreateBoard}/>
     </View>
   );
 };
