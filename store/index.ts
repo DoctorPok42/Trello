@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import organizationSlice from "@/store/slices/organizationSlice";
+import boardSlice from "@/store/slices/boardSlice";
 
 const store = configureStore({
   reducer: {
     organization: organizationSlice,
+    boardSlice: boardSlice,
   },
 });
 
