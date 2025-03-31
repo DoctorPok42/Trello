@@ -29,7 +29,8 @@ export const PageBoards = () => {
   }
     
   const handleSelectBoard = (boardId: string) => {
-    dispatch(setBoardData({ ...board, id: boardId }));
+    const dataToSet = { ...board, id: boardId };
+    dispatch(setBoardData(dataToSet));
     navigation.navigate("PageLists" as never);
   };
 

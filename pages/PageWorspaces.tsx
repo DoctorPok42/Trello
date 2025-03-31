@@ -19,10 +19,8 @@ export const PageWorkpaces = () => {
   };
 
   const handleSelectOrganization = (workspaceId: string) => {
-    dispatch(setOrganizationData({
-        ...organization,
-        id: workspaceId,
-    }))
+    const dataToSet = {...organization, id: workspaceId};
+    dispatch(setOrganizationData(dataToSet));
     navigation.navigate("PageBoards" as never)
   }
 

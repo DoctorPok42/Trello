@@ -29,7 +29,8 @@ export const PageLists = () => {
   };
 
   const handleSelectList = (listId: string) => {
-    dispatch(setListData({ ...list, id: listId }));
+    const dataToSet = { ...list, id: listId };
+    dispatch(setListData(dataToSet));
     navigation.navigate("PageCards" as never);
   };
 
