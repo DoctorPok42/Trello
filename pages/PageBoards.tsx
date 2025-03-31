@@ -10,32 +10,32 @@ import { Toast } from "toastify-react-native";
 
 export const PageBoards = () => {
   const [boards, setBoards] = useState<any[]>();
-  const [organizationId, setOrganizationId] = useState(store.getState().organization.data.id);
   const board = useSelector((state: RootState) => state.board.data);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const organizationId = store.getState().organization.data.id;
 
-    const fetchBoards = async () => {
-      const responseData = await getBoards(organizationId);
-      if (responseData) setBoards(responseData);
-    };
+  const fetchBoards = async () => {
+    const responseData = await getBoards(organizationId);
+    if (responseData) setBoards(responseData);
+  };
   
-    const handleCreateBoard = () => {
-      Alert.prompt("New board", "Type board's name.", async (name) => {
-        if (name) await createBoardByOrganizationId(name, organizationId) 
-          ? Toast.success("Board created.") : Toast.error("Error during board creation.")
-      });
-      navigation.navigate("PageLists" as never)
-    }
+  const handleCreateBoard = () => {
+    Alert.prompt("New board", "Type board's name.", async (name) => {
+      const response = await createBoardByOrganizationId(name, organizationId);
+      response ? Toast.success("Board created.") : Toast.error("Error during board creation.")
+      if (response) navigation.navigate("PageLists" as never)
+    });
+  }
     
-    const handleSelectBoard = (boardId: string) => {
-      dispatch(setBoardData({ ...board, id: boardId }))
-      navigation.navigate("PageLists" as never)
-    };
+  const handleSelectBoard = (boardId: string) => {
+    dispatch(setBoardData({ ...board, id: boardId }));
+    navigation.navigate("PageLists" as never);
+  };
 
-    useEffect(() => {
-      fetchBoards();
-    }, []);
+  useEffect(() => {
+    fetchBoards();
+  }, []);
 
   return (
     <View style={styles.container}>

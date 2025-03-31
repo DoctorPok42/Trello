@@ -7,8 +7,6 @@ import ToastManager, { Toast } from "toastify-react-native";
 
 export const PageHome = () => {
   const navigation = useNavigation();
-  
-
 
   const handleCreateOrganization = async () => {
     Alert.prompt("New workspace", "Type workspace's name.", async (displayName) => {
