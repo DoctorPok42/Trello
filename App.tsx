@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Vibration, ScrollView, RefreshControl, Alert, Text, Dimensions,ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Vibration, ScrollView, RefreshControl, Alert, Text, Dimensions } from 'react-native';
 import { PaperProvider, Searchbar, Menu, Divider } from 'react-native-paper';
 import Login from './Login';
 import { TrelloAPI } from "./trello_module";
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import { AddButton, Board, Logout, MenuPopup } from './components';
+import { AddButton, Board, Logout, MenuPopup, Snackbar } from './components';
 import Card from './Card';
 import BoardPage from './Board';
 import { Picker } from '@react-native-picker/picker';
@@ -47,6 +47,7 @@ const Base = () => {
   const [refreshing, setRefreshing] = useState<boolean>(true);
   const [edit, setEdit] = useState<string | null>(null);
   const [menuVisible, setMenuVisible] = useState<{ id, name} | null>(null);
+  const [alert, setAlert] = useState<{ visible: boolean, message: string }>({ visible: false, message: '' });
 
   const handleCallWorkspaces = async (isLast?: boolean) => {
     setRefreshing(true);
@@ -59,8 +60,11 @@ const Base = () => {
       await trelloAPI.createBoard(name, selectedWorkspace || "", selectedTemplateId)
       getWorkspaces(trelloAPI, setWorkspaces, selectedWorkspace, setSelectedWorkspace, setBoards);
       setBoardCreationType("none");
+      setAlert({ visible: true, message: `Board "${name}" created` });
+      setVisible(null);
     } else if (visible === "Workspace") {
       await trelloAPI.createWorkspace(name)
+      setAlert({ visible: true, message: `Workspace "${name}" created` });
       setVisible(null)
       handleCallWorkspaces(true);
     }
@@ -73,6 +77,7 @@ const Base = () => {
       } else {
         await trelloAPI.renameWorkspace(selectedWorkspace, name);
       }
+      setAlert({ visible: true, message: `Workspace "${name}" updated` });
       setEdit(null);
       setVisible(null);
       setSearchQuery('');
@@ -167,11 +172,7 @@ const Base = () => {
   }, [isAppReady]);
 
   if (!isAppReady) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0079BF" />
-      </View>
-    );
+    return null;
   }
 
   return (
@@ -278,10 +279,11 @@ const Base = () => {
                   },
                   {
                     text: 'Delete',
-                    onPress: () => {
-                      trelloAPI.deleteWorkspace(selectedWorkspace).then(() => {
+                    onPress: async () => {
+                      await trelloAPI.deleteWorkspace(selectedWorkspace).then(() => {
                         Vibration.vibrate([0, 60, 0, 0]);
                         setSelectedWorkspace(workspaces[0].id);
+                        setAlert({ visible: true, message: `Workspace successfully deleted` });
                       })
                     }
                   },
@@ -297,6 +299,16 @@ const Base = () => {
         ) : (
           <Login onTokenReceived={handleTokenReceived} />
       )}
+
+      <Snackbar
+        visible={alert.visible}
+        message={alert.message}
+        onDismiss={() => setAlert({ visible: false, message: '' })}
+        duration={3000}
+        actions={[
+          { label: 'OK', onPress: () => setAlert({ visible: false, message: '' }) },
+        ]}
+      />
     </View>
   );
 }

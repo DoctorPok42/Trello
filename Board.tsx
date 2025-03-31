@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Dimensions, ScrollView, RefreshControl, Alert, Button } from 'react-native';
 import { trelloAPI } from './App';
 import { List, Modal, PaperProvider, Portal, Searchbar, SegmentedButtons, TextInput } from 'react-native-paper';
-import { AddButton, Card } from './components';
+import { AddButton, Card, Snackbar } from './components';
 import { useNavigation } from '@react-navigation/native';
 
 interface BoardPageProps {
@@ -24,6 +24,7 @@ const BoardPage = ({
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [value, setValue] = useState<"card" | "list">('card');
   const [listOpen, setListOpen] = useState<number>(-1);
+  const [alert, setAlert] = useState<{ visible: boolean, message: string }>({ visible: false, message: '' });
 
   const containerStyle = {
     backgroundColor: 'white',
@@ -89,11 +90,15 @@ const BoardPage = ({
         setSearchQuery('');
       });
     }
+    setIsEditing(null);
+    setListOpen(-1);
+    setAlert({ visible: true, message: `${visible === "list" ? "List" : "Card"} created successfully` });
     onRefresh();
   }
 
   const handleDeleteCard = async (id: string) => {
     await trelloAPI.deleteCard(id).then(() => {
+      setAlert({ visible: true, message: 'Card deleted successfully' });
       onRefresh();
     });
   }
@@ -107,6 +112,7 @@ const BoardPage = ({
   }, [navigation]);
 
   return (
+    <View style={{ flex: 1 }}>
     <PaperProvider>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
@@ -257,6 +263,17 @@ const BoardPage = ({
         </View>
       </ScrollView>
     </PaperProvider>
+
+      <Snackbar
+        visible={alert.visible}
+        message={alert.message}
+        onDismiss={() => setAlert({ visible: false, message: '' })}
+        duration={3000}
+        actions={[
+          { label: 'OK', onPress: () => setAlert({ visible: false, message: '' }) },
+        ]}
+      />
+    </View>
   );
 };
 
