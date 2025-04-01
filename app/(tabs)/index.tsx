@@ -6,7 +6,6 @@ import { PageBoards } from '@/pages/PageBoards';
 import { PageWorkpaces } from '@/pages/PageWorspaces';
 import { Provider } from 'react-redux';
 import store from '@/store';
-import { PageCards } from '@/pages/PageCards';
 import { PageLists } from '@/pages/PageLists';
 import ToastManager from 'toastify-react-native/components/ToastManager';
 
@@ -22,7 +21,6 @@ const App = () => {
        <Stack.Screen name="PageWorkspaces" component={PageWorkpaces} /> 
        <Stack.Screen name="PageBoards" component={PageBoards} /> 
        <Stack.Screen name="PageLists" component={PageLists} /> 
-       <Stack.Screen name="PageCards" component={PageCards} /> 
        </Stack.Navigator>
     </SafeAreaView>
     </Provider>
