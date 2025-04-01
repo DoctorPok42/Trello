@@ -1,8 +1,5 @@
-import { Header } from "@/components/trello/Header";
-import { createOrganization } from "@/utils/trello/organizations";
 import { useNavigation } from "expo-router";
-import { View, Text, StyleSheet, Alert } from "react-native";
-import ToastManager, { Toast } from "toastify-react-native";
+import { View, StyleSheet } from "react-native";
 import { PageWorkpaces } from "./PageWorspaces";
 
 export const PageHome = () => {
