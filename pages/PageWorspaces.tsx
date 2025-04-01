@@ -53,7 +53,6 @@ export const PageWorkpaces = () => {
           renderItem={({ item }) => (
             <ListCard
               svg={<MaterialSymbolsArrowCircleRightOutline />}
-              customHeight={75}
               title={item.displayName}
               hasData={false}
               onPress={() => handleSelectOrganization(item.id)}

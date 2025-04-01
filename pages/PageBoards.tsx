@@ -48,7 +48,6 @@ export const PageBoards = () => {
       {board && boards?.length ? (
         boards.map((board, index) => (
           <ListCard
-            customHeight={160}
             title={board.name}
             hideArrow={true}
             key={index}

@@ -7,15 +7,19 @@ import { setListId } from "@/store/slices/listSlice";
 import { getCardsFromList, createCardInList } from "@/utils/trello/cards";
 import { createListByBoardId, getListsByBoardId } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, FlatList } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  FlatList,
+  GestureResponderEvent,
+} from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 
 export const PageLists = () => {
   const dispatch = useDispatch();
   const [lists, setLists] = useState<any[]>();
-  const [isGrow, setIsGrow] = useState(false);
-  const [customHeight, setCustomHeight] = useState<number | undefined>(75);
   const [cards, setCards] = useState<any[]>();
   const boardId = store.getState().board.data.id;
   const listId = store.getState().list.data.id;
@@ -31,12 +35,17 @@ export const PageLists = () => {
     if (responseData) setLists(responseData);
   };
 
-  const handleCreateCard = () => {
+  const handleCreateCard = (event: GestureResponderEvent) => {
+    event.stopPropagation();
     Alert.prompt("New Card", "Type card's name.", async (name) => {
-      const response = await createCardInList(name, listId);
-      response
-        ? Toast.success("Card created.")
-        : Toast.error("Error during card creation.");
+      const response = await createCardInList(
+        name,
+        store.getState().list.data.id
+      );
+      if (response) {
+        await fetchCards(listId);
+        Toast.success("Card created.");
+      } else Toast.error("Error during card creation.");
     });
   };
 
@@ -53,8 +62,6 @@ export const PageLists = () => {
   const handleSelectList = async (listId: string) => {
     await fetchCards(listId);
     dispatch(setListId({ ...list, id: listId }));
-    setIsGrow(!isGrow);
-    isGrow ? setCustomHeight(undefined) : setCustomHeight(75);
   };
 
   useEffect(() => {
@@ -75,6 +82,7 @@ export const PageLists = () => {
             hasData={list.id === item.id ? true : false}
             data={list.id === item.id ? cards : []}
             noRoundBorder={true}
+            handleCreateCard={handleCreateCard}
           />
         )}
       />
