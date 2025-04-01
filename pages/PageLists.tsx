@@ -1,37 +1,60 @@
-import { Cards } from "@/components/trello/Card";
+import { IonCreate } from "@/components/icons/IonCreate";
+import { MaterialSymbolsArrowDropDownCircleOutline } from "@/components/icons/MaterialSymbolsArrowDropDownCircleOutline";
+import { Header } from "@/components/trello/Header";
+import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
-import { setListData } from "@/store/slices/listSlice";
+import { setListId } from "@/store/slices/listSlice";
+import { getCardsFromList, createCardInList } from "@/utils/trello/cards";
 import { createListByBoardId, getListsByBoardId } from "@/utils/trello/lists";
-import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 
 export const PageLists = () => {
-  const [lists, setLists] = useState<any[]>();
-  const list = useSelector((state: RootState) => state.board.data);
-  const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [lists, setLists] = useState<any[]>();
+  const [isGrow, setIsGrow] = useState(false);
+  const [customHeight, setCustomHeight] = useState<number | undefined>(75);
+  const [cards, setCards] = useState<any[]>();
   const boardId = store.getState().board.data.id;
+  const listId = store.getState().list.data.id;
+  const list = useSelector((state: RootState) => state.list.data);
+
+  const fetchCards = async (id: string) => {
+    const responseData = await getCardsFromList(id);
+    if (responseData) setCards(responseData);
+  };
 
   const fetchLists = async () => {
     const responseData = await getListsByBoardId(boardId);
     if (responseData) setLists(responseData);
   };
 
-  const handleCreateList = () => {
-    Alert.prompt("New List", "Type the list's name.", async (name) => {
-      const response = await createListByBoardId(name, boardId);
-      response ? Toast.success("List created.") : Toast.error("Error during list creation.");
-      if (response) navigation.navigate("PageCards" as never);
+  const handleCreateCard = () => {
+    Alert.prompt("New Card", "Type card's name.", async (name) => {
+      const response = await createCardInList(name, listId);
+      response
+        ? Toast.success("Card created.")
+        : Toast.error("Error during card creation.");
     });
   };
 
-  const handleSelectList = (listId: string) => {
-    const dataToSet = { ...list, id: listId };
-    dispatch(setListData(dataToSet));
-    navigation.navigate("PageCards" as never);
+  const handleCreateList = async () => {
+    Alert.prompt("New List", "Type the list's name.", async (name) => {
+      const response = await createListByBoardId(name, boardId);
+      if (response) {
+        await fetchLists();
+        Toast.success("List created.");
+      } else Toast.error("Error during list creation.");
+    });
+  };
+
+  const handleSelectList = async (listId: string) => {
+    await fetchCards(listId);
+    dispatch(setListId({ ...list, id: listId }));
+    setIsGrow(!isGrow);
+    isGrow ? setCustomHeight(undefined) : setCustomHeight(75);
   };
 
   useEffect(() => {
@@ -40,11 +63,22 @@ export const PageLists = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>My Lists</Text>
-      {lists?.map((list, index) => (
-        <Cards title={list.name} key={index} onPress={() => handleSelectList(list.id)} />
-      ))}
-      <Cards title="Create a list" onPress={handleCreateList} />
+      <Header title="My Lists" svg={<IonCreate />} action={handleCreateList} />
+      <FlatList
+        data={lists}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ListCard
+            svg={<MaterialSymbolsArrowDropDownCircleOutline />}
+            customHeight={list.id === item.id ? customHeight : 75}
+            title={item.name}
+            onPress={() => handleSelectList(item.id)}
+            hasData={list.id === item.id ? true : false}
+            data={list.id === item.id ? cards : []}
+            noRoundBorder={true}
+          />
+        )}
+      />
     </View>
   );
 };
@@ -52,14 +86,18 @@ export const PageLists = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#222831",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#ffff",
   },
   text: {
     fontSize: 28,
     fontWeight: "700",
     color: "#ffffff",
     textAlign: "center",
+  },
+  noList: {
+    color: "gray",
+    fontSize: 20,
+    textAlign: "center",
+    marginTop: 20,
   },
 });

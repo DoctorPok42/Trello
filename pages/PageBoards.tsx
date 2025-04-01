@@ -1,14 +1,9 @@
 import { IonCreate } from "@/components/icons/IonCreate";
-import { Cards } from "@/components/trello/Card";
 import { Header } from "@/components/trello/Header";
 import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
 import { setBoardData } from "@/store/slices/boardSlice";
-import {
-  createBoard,
-  createBoardByOrganizationId,
-  getBoards,
-} from "@/utils/trello/boards";
+import { createBoardByOrganizationId, getBoards } from "@/utils/trello/boards";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
@@ -27,12 +22,13 @@ export const PageBoards = () => {
     if (responseData) setBoards(responseData);
   };
 
-  const handleCreateBoard = () => {
+  const handleCreateBoard = async () => {
     Alert.prompt("New board", "Type board's name.", async (name) => {
       const response = await createBoardByOrganizationId(name, organizationId);
-      response
-        ? Toast.success("Board created.")
-        : Toast.error("Error during board creation.");
+      if (response) {
+        await fetchBoards()
+        Toast.success("Board created.")
+      } else Toast.error("Error during board creation.")
     });
   };
 
@@ -44,22 +40,16 @@ export const PageBoards = () => {
 
   useEffect(() => {
     fetchBoards();
-  }, [handleCreateBoard]);
+  }, []);
 
   return (
     <View style={styles.container}>
-      <Header
-        title="My Boards"
-        svg={<IonCreate />}
-        action={handleCreateBoard}
-      />
-
+      <Header title="My Boards" svg={<IonCreate />} action={handleCreateBoard} />
       {board && boards?.length ? (
         boards.map((board, index) => (
           <ListCard
             customHeight={160}
             title={board.name}
-           /*  creationDate="" */
             hideArrow={true}
             key={index}
             onPress={() => handleSelectBoard(board.id)}

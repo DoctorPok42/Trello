@@ -1,4 +1,5 @@
 import { IonCreate } from "@/components/icons/IonCreate";
+import { MaterialSymbolsArrowCircleRightOutline } from "@/components/icons/MaterialSymbolsArrowCircleRightOutline";
 import { Header } from "@/components/trello/Header";
 import { ListCard } from "@/components/trello/ListCard";
 import { RootState } from "@/store";
@@ -6,15 +7,13 @@ import { setOrganizationData } from "@/store/slices/organizationSlice";
 import { createOrganization, getOrganization } from "@/utils/trello/organizations";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Alert } from "react-native";
+import { StyleSheet, FlatList, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 
 export const PageWorkpaces = () => {
   const [workspaces, setWorkspaces] = useState<any[]>();
-  const organization = useSelector(
-    (state: RootState) => state.organization.data
-  );
+  const organization = useSelector((state: RootState) => state.organization.data);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -30,39 +29,37 @@ export const PageWorkpaces = () => {
   };
 
   const handleCreateOrganization = async () => {
-    Alert.prompt(
-      "New workspace",
-      "Type workspace's name.",
+    Alert.prompt( "New workspace", "Please enter the workspace name.",
       async (displayName) => {
         let response = await createOrganization(displayName);
-        if (displayName)
-          response
-            ? Toast.success("Workspace created")
-            : Toast.error("Error during Workspace creation.");
+        if (response) {
+          await fetchOrganizations();
+          Toast.success("Workspace created");
+        } else Toast.error("Error during Workspace creation.");
       }
     );
   };
-  
+
   useEffect(() => {
-    fetchOrganizations();
-  }, [handleCreateOrganization]);
+    fetchOrganizations()
+  }, []);
 
   return (
     <>
-      <Header title="Workspace" svg={<IonCreate/>} action={handleCreateOrganization} />
-      <View style={styles.container}>
+      <Header title="Workspaces" svg={<IonCreate />} action={handleCreateOrganization} />
         <FlatList
           data={workspaces}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <ListCard
+              svg={<MaterialSymbolsArrowCircleRightOutline />}
               customHeight={75}
               title={item.displayName}
+              hasData={false}
               onPress={() => handleSelectOrganization(item.id)}
             />
           )}
         />
-      </View>
     </>
   );
 };
