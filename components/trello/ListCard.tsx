@@ -3,11 +3,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Alert,
   GestureResponderEvent,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialSymbolsEditSquareOutlineRounded } from "../icons/MaterialSymbolsEditSquareOutlineRounded";
+import {
+  GestureHandlerRootView,
+  Swipeable,
+} from "react-native-gesture-handler";
 
 interface CardsProps {
   title?: string;
@@ -61,56 +64,80 @@ export const ListCard: React.FC<CardsProps> = ({
             {!hideArrow && svg}
           </View>
 
-          {hasData && Array.isArray(data) && (
-            <View>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            {hasData && Array.isArray(data) && (
               <View>
-                <LinearGradient
-                  colors={["rgb(0, 70, 120)", "rgb(91, 134, 164)"]}
-                  start={{ x: 0, y: 0 }}
-                  style={[styles.newCardBtn, noRoundStyle]}
-                >
-                  <TouchableOpacity
-                    onPress={(event) => handleCreateCard!(event)}
-                  >
-                    <Text style={styles.newCardText}>New card</Text>
-                  </TouchableOpacity>
-                </LinearGradient>
-              </View>
-              <View style={styles.cardContainer}>
                 <View>
-                  {data.length > 0 ? (
-                    data.map((current) => (
-                      <LinearGradient
-                        key={current.id}
-                        colors={["rgb(0, 152, 169)", "rgb(226, 72, 253)"]}
-                        start={{ x: 0, y: 0 }}
-                        style={styles.cardSubContainer}
-                      >
-                        <View
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                          }}
+                  <LinearGradient
+                    colors={["rgb(3, 25, 45)", "rgb(5, 108, 152)"]}
+                    start={{ x: 0, y: 0 }}
+                    style={[styles.newCardBtn]}
+                  >
+                    <TouchableOpacity
+                      onPress={(event) => handleCreateCard!(event)}
+                    >
+                      <Text style={styles.newCardText}>New card</Text>
+                    </TouchableOpacity>
+                  </LinearGradient>
+                </View>
+                <View style={styles.cardContainer}>
+                  <View>
+                    {data.length > 0 ? (
+                      data.map((current) => (
+                        <Swipeable
+                          key={current.id}
+                          renderRightActions={() => (
+                            <>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  /* handleDeleteCard() */ current.id
+                                }
+                                style={styles.deleteButton}
+                              >
+                                <Text style={styles.deleteText}>Delete</Text>
+                              </TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  /* handleDeleteCard() */ current.id
+                                }
+                                style={styles.updateButton}
+                              >
+                                <Text style={styles.updateText}>Update</Text>
+                              </TouchableOpacity>
+                            </>
+                          )}
                         >
-                          <Text style={styles.cardsTitleStyle}>
-                            {current.name}
-                          </Text>
-                          <TouchableOpacity
-                            onPress={() => editCard?.(current.id)}
+                          <LinearGradient
+                            colors={["rgb(0, 152, 169)", "rgb(226, 72, 253)"]}
+                            start={{ x: 0, y: 0 }}
+                            style={styles.cardSubContainer}
                           >
-                            <MaterialSymbolsEditSquareOutlineRounded />
-                          </TouchableOpacity>
-                        </View>
-                      </LinearGradient>
-                    ))
-                  ) : (
-                    <Text>No cards yet</Text>
-                  )}
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Text style={styles.cardsTitleStyle}>
+                                {current.name}
+                              </Text>
+                              <TouchableOpacity
+                                onPress={() => editCard?.(current.id)}
+                              >
+                              </TouchableOpacity>
+                            </View>
+                          </LinearGradient>
+                        </Swipeable>
+                      ))
+                    ) : (
+                      <Text>No cards yet</Text>
+                    )}
+                  </View>
                 </View>
               </View>
-            </View>
-          )}
+            )}
+          </GestureHandlerRootView>
         </TouchableOpacity>
       </LinearGradient>
     </View>
@@ -145,20 +172,19 @@ const styles = StyleSheet.create({
   cardSubContainer: {
     height: "auto",
     backgroundColor: "#fff",
-    borderRadius: 10,
     borderWidth: 1,
     borderColor: "#7791A3",
     padding: 20,
-    marginBottom: 5
+    marginBottom: 5,
   },
   newCardBtn: {
     borderWidth: 1,
     borderColor: "#fff",
     alignSelf: "flex-end",
-    borderRadius: 5,
     paddingHorizontal: 15,
     paddingVertical: 5,
-    marginTop: 20
+    marginTop: 20,
+    borderRadius: 100,
   },
   newCardText: {
     fontSize: 14,
@@ -176,5 +202,29 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     color: "#0F5D81",
     textAlign: "left",
+  },
+  deleteButton: {
+    backgroundColor: "rgb(255, 53, 53)",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
+    height: 62,
+  },
+  deleteText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: 500,
+  },
+  updateButton: {
+    backgroundColor: "#377ef6",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 80,
+    height: 62,
+  },
+  updateText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: 500,
   },
 });
