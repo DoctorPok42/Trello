@@ -8,12 +8,14 @@ import { Provider } from 'react-redux';
 import store from '@/store';
 import { PageCards } from '@/pages/PageCards';
 import { PageLists } from '@/pages/PageLists';
+import ToastManager from 'toastify-react-native/components/ToastManager';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
 
   return (
     <Provider store={store}>
+    <ToastManager />
     <SafeAreaView style={styles.container}>
        <Stack.Navigator screenOptions={{ headerShown: false }}>
        <Stack.Screen name="PageHome" component={PageHome} /> 
@@ -30,7 +32,7 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#222831"
+    backgroundColor: "#015A8E"
   },
   text: {
     fontSize: 25,
