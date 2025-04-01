@@ -1,10 +1,9 @@
-import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, View, Animated, Easing, } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface CardsProps {
   title?: string;
   onPress?: () => void;
-  customHeight?: number | undefined;
   creationDate?: string;
   hideArrow?: boolean;
   svg?: JSX.Element;
@@ -13,38 +12,15 @@ interface CardsProps {
   noRoundBorder?: boolean;
 }
 
-export const ListCard: React.FC<CardsProps> = ({
-  title,
-  onPress,
-  creationDate,
-  hideArrow = false,
-  svg,
-  hasData = false,
-  data,
-  noRoundBorder = false,
-}) => {
+export const ListCard: React.FC<CardsProps> = ({ title, onPress, creationDate, hideArrow = false, svg, hasData = false, data, noRoundBorder = false }) => {
   let noRoundStyle = {};
   if (noRoundBorder) noRoundStyle = { borderRadius: 5 };
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={["rgb(0, 70, 120)", "rgb(91, 134, 164)"]}
-        start={{ x: 0, y: 0 }}
-        style={[styles.cards, noRoundStyle]}
-      >
-        <TouchableOpacity
-          style={styles.subContainer}
-          onPress={onPress}
-          activeOpacity={0.7}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+      <LinearGradient colors={["rgb(0, 70, 120)", "rgb(91, 134, 164)"]} start={{ x: 0, y: 0 }} style={[styles.cards, noRoundStyle]} >
+        <TouchableOpacity style={styles.subContainer} onPress={onPress} activeOpacity={0.7} >
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }} >
             <Text style={styles.text}>{title}</Text>
             <Text style={styles.textSmall}>{creationDate}</Text>
             {!hideArrow && svg}

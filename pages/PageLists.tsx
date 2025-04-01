@@ -70,7 +70,6 @@ export const PageLists = () => {
         renderItem={({ item }) => (
           <ListCard
             svg={<MaterialSymbolsArrowDropDownCircleOutline />}
-            customHeight={list.id === item.id ? customHeight : 75}
             title={item.name}
             onPress={() => handleSelectList(item.id)}
             hasData={list.id === item.id ? true : false}
