@@ -1,4 +1,4 @@
-import { Cards } from "@/components/trello/card";
+import { Cards } from "@/components/trello/Card";
 import store from "@/store";
 import { createCardInList, getCardsFromList } from "@/utils/trello/cards";
 import { useEffect, useState } from "react";

@@ -1,17 +1,22 @@
-import { Cards } from "@/components/trello/card";
+import { IonCreate } from "@/components/icons/IonCreate";
+import { Header } from "@/components/trello/Header";
+import { ListCard } from "@/components/trello/ListCard";
 import { RootState } from "@/store";
 import { setOrganizationData } from "@/store/slices/organizationSlice";
-import { getOrganization } from "@/utils/trello/organizations";
+import { createOrganization, getOrganization } from "@/utils/trello/organizations";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useDispatch, useSelector } from 'react-redux'
+import { View, Text, StyleSheet, FlatList, Alert } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { Toast } from "toastify-react-native";
 
 export const PageWorkpaces = () => {
-    const [workspaces, setWorkspaces] = useState<any[]>();
-    const organization = useSelector((state: RootState) => state.organization.data);
-    const navigation = useNavigation();
-    const dispatch = useDispatch()
+  const [workspaces, setWorkspaces] = useState<any[]>();
+  const organization = useSelector(
+    (state: RootState) => state.organization.data
+  );
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const fetchOrganizations = async () => {
     const responseData = await getOrganization();
@@ -19,38 +24,48 @@ export const PageWorkpaces = () => {
   };
 
   const handleSelectOrganization = (workspaceId: string) => {
-    const dataToSet = {...organization, id: workspaceId};
+    const dataToSet = { ...organization, id: workspaceId };
     dispatch(setOrganizationData(dataToSet));
-    navigation.navigate("PageBoards" as never)
-  }
+    navigation.navigate("PageBoards" as never);
+  };
 
+  const handleCreateOrganization = async () => {
+    Alert.prompt(
+      "New workspace",
+      "Type workspace's name.",
+      async (displayName) => {
+        let response = await createOrganization(displayName);
+        if (displayName)
+          response
+            ? Toast.success("Workspace created")
+            : Toast.error("Error during Workspace creation.");
+      }
+    );
+  };
+  
   useEffect(() => {
     fetchOrganizations();
-  }, []);
+  }, [handleCreateOrganization]);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>My workspaces</Text>
-      <View>
-        {workspaces?.map((workspace, index) => (
-          <Cards title={workspace.displayName} key={index} onPress={() => handleSelectOrganization(workspace.id)}/>
-        ))}
+    <>
+      <Header title="Workspace" svg={<IonCreate/>} action={handleCreateOrganization} />
+      <View style={styles.container}>
+        <FlatList
+          data={workspaces}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ListCard
+              customHeight={75}
+              title={item.displayName}
+              onPress={() => handleSelectOrganization(item.id)}
+            />
+          )}
+        />
       </View>
-    </View>
+    </>
   );
 };
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#222831",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#ffffff",
-    textAlign: "center",
-  },
+  container: {},
 });

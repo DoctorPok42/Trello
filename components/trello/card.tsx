@@ -15,16 +15,23 @@ export const Cards: React.FC<CardsProps> = ({ title, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    margin: 8,
-    backgroundColor: "#393E46",
-    borderRadius: 10,
+    width: 150,  // Taille fixe pour un carré
+    aspectRatio: 1, // Assure que la hauteur = largeur
+    backgroundColor: "#00ADB5",
+    borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+    margin: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
   },
   text: {
-    fontSize: 20,
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "700",
     color: "#EEEEEE",
+    textAlign: "center",
   },
 });

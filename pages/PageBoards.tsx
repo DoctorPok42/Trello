@@ -1,7 +1,14 @@
-import { Cards } from "@/components/trello/card";
+import { IonCreate } from "@/components/icons/IonCreate";
+import { Cards } from "@/components/trello/Card";
+import { Header } from "@/components/trello/Header";
+import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
 import { setBoardData } from "@/store/slices/boardSlice";
-import { createBoard, createBoardByOrganizationId, getBoards } from "@/utils/trello/boards";
+import {
+  createBoard,
+  createBoardByOrganizationId,
+  getBoards,
+} from "@/utils/trello/boards";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
@@ -19,15 +26,16 @@ export const PageBoards = () => {
     const responseData = await getBoards(organizationId);
     if (responseData) setBoards(responseData);
   };
-  
+
   const handleCreateBoard = () => {
     Alert.prompt("New board", "Type board's name.", async (name) => {
       const response = await createBoardByOrganizationId(name, organizationId);
-      response ? Toast.success("Board created.") : Toast.error("Error during board creation.")
-      if (response) navigation.navigate("PageLists" as never)
+      response
+        ? Toast.success("Board created.")
+        : Toast.error("Error during board creation.");
     });
-  }
-    
+  };
+
   const handleSelectBoard = (boardId: string) => {
     const dataToSet = { ...board, id: boardId };
     dispatch(setBoardData(dataToSet));
@@ -36,15 +44,30 @@ export const PageBoards = () => {
 
   useEffect(() => {
     fetchBoards();
-  }, []);
+  }, [handleCreateBoard]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Liste des tableaux</Text>
-      {boards?.map((board, index) => (
-        <Cards title={board.name} key={index} onPress={() => handleSelectBoard(board.id)}/>
-      ))}
-      <Cards title="Create a board" onPress={handleCreateBoard}/>
+      <Header
+        title="My Boards"
+        svg={<IonCreate />}
+        action={handleCreateBoard}
+      />
+
+      {board && boards?.length ? (
+        boards.map((board, index) => (
+          <ListCard
+            customHeight={160}
+            title={board.name}
+           /*  creationDate="" */
+            hideArrow={true}
+            key={index}
+            onPress={() => handleSelectBoard(board.id)}
+          />
+        ))
+      ) : (
+        <Text style={styles.noBoard}>No board yet</Text>
+      )}
     </View>
   );
 };
@@ -52,14 +75,19 @@ export const PageBoards = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#222831",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#fff",
   },
   text: {
-    fontSize: 28,         
+    fontSize: 28,
     fontWeight: "700",
     color: "#ffffff",
     textAlign: "center",
+  },
+
+  noBoard: {
+    color: "gray",
+    fontSize: 20,
+    textAlign: "center",
+    marginTop: 20,
   },
 });

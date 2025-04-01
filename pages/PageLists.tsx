@@ -1,4 +1,4 @@
-import { Cards } from "@/components/trello/card";
+import { Cards } from "@/components/trello/Card";
 import store, { RootState } from "@/store";
 import { setListData } from "@/store/slices/listSlice";
 import { createListByBoardId, getListsByBoardId } from "@/utils/trello/lists";
