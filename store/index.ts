@@ -3,6 +3,7 @@ import organizationSlice from "@/store/slices/organizationSlice";
 import boardSlice from "@/store/slices/boardSlice";
 import listSlice from "@/store/slices/listSlice";
 import cardSlice from "@/store/slices/cardSlice";
+import trelloItemsSlice from "@/store/slices/trelloItemsSlice";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     board: boardSlice,
     list: listSlice,
     card: cardSlice,
+    trelloItems: trelloItemsSlice,
   },
 });
 
