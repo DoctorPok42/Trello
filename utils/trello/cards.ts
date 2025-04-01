@@ -8,7 +8,6 @@ export const createCardInList = async (name: string, listId: string) => {
 
   try {
     const response = await fetch(url, params);
-    console.log("Response : ", response.status, response.statusText)
     if (response.status === 200) return true;
     else return false;
   } catch (err) {
