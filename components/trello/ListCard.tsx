@@ -1,4 +1,11 @@
-import { Text, StyleSheet, TouchableOpacity, View, Alert, GestureResponderEvent } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Alert,
+  GestureResponderEvent,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialSymbolsEditSquareOutlineRounded } from "../icons/MaterialSymbolsEditSquareOutlineRounded";
 
@@ -28,7 +35,7 @@ export const ListCard: React.FC<CardsProps> = ({
   noRoundBorder = false,
 }) => {
   let noRoundStyle = {};
-  if (noRoundBorder) noRoundStyle = { borderRadius: 5 };
+  if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
 
   return (
     <View style={styles.container}>
@@ -62,7 +69,9 @@ export const ListCard: React.FC<CardsProps> = ({
                   start={{ x: 0, y: 0 }}
                   style={[styles.newCardBtn, noRoundStyle]}
                 >
-                  <TouchableOpacity onPress={(event) => handleCreateCard!(event)}>
+                  <TouchableOpacity
+                    onPress={(event) => handleCreateCard!(event)}
+                  >
                     <Text style={styles.newCardText}>New card</Text>
                   </TouchableOpacity>
                 </LinearGradient>
@@ -70,12 +79,13 @@ export const ListCard: React.FC<CardsProps> = ({
               <View style={styles.cardContainer}>
                 <View>
                   {data.length > 0 ? (
-                    <LinearGradient
-                      colors={["rgb(0, 152, 169)", "rgb(226, 72, 253)"]}
-                      start={{ x: 0, y: 0 }}
-                      style={styles.cardSubContainer}
-                    >
-                      {data.map((current) => (
+                    data.map((current) => (
+                      <LinearGradient
+                        key={current.id}
+                        colors={["rgb(0, 152, 169)", "rgb(226, 72, 253)"]}
+                        start={{ x: 0, y: 0 }}
+                        style={styles.cardSubContainer}
+                      >
                         <View
                           style={{
                             flexDirection: "row",
@@ -83,15 +93,17 @@ export const ListCard: React.FC<CardsProps> = ({
                             justifyContent: "space-between",
                           }}
                         >
-                          <Text style={styles.cardsTitleStyle} key={current.id}>
+                          <Text style={styles.cardsTitleStyle}>
                             {current.name}
                           </Text>
-                          <TouchableOpacity onPress={() => editCard}>
+                          <TouchableOpacity
+                            onPress={() => editCard?.(current.id)}
+                          >
                             <MaterialSymbolsEditSquareOutlineRounded />
                           </TouchableOpacity>
                         </View>
-                      ))}
-                    </LinearGradient>
+                      </LinearGradient>
+                    ))
                   ) : (
                     <Text>No cards yet</Text>
                   )}
@@ -137,6 +149,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#7791A3",
     padding: 20,
+    marginBottom: 5
   },
   newCardBtn: {
     borderWidth: 1,
@@ -145,7 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 15,
     paddingVertical: 5,
-    marginVertical: 10,
+    marginTop: 20
   },
   newCardText: {
     fontSize: 14,
