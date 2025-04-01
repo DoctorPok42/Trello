@@ -9,14 +9,14 @@ const listSlice = createSlice({
     }
   },
   reducers: {
-    setListData: (state, action) => {
+    setListId: (state, action) => {
       state.data.id = action.payload.id;
     },
 }});
 
   
 export const { 
-setListData, 
+  setListId, 
 } = listSlice.actions;
 
 export default listSlice.reducer;
