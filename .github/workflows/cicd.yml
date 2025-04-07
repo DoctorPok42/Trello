@@ -24,7 +24,6 @@ jobs:
 
   test:
     runs-on: self-hosted
-    needs: size
     steps:
       - uses: actions/checkout@v4
 
