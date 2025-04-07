@@ -1,4 +1,4 @@
-export class TrelloAPI {
+class TrelloAPI {
   private readonly key: string;
   private token: string;
   private readonly baseUrl: string = "https://api.trello.com/1";
@@ -156,3 +156,5 @@ export class TrelloAPI {
     return this.makeRequest("GET", `/boards/${boardId}/lists`);
   }
 }
+
+export default TrelloAPI;
