@@ -33,6 +33,19 @@ export const getCardsFromList = async (listId: string) => {
   }
 };
 
+export const updateCard = async (cardId: string, name?: string, desc?:string) => {
+  const url = `https://api.trello.com/1/cards/${cardId}?key=${APIKey}&token=${APIToken}&name=${name}&desc=${desc}`;
+  const params = { method: "PUT", headers: { Accept: "application/json" } };
+
+  try {
+    const response = await fetch(url, params);
+    const responseData = await response.json();
+    return responseData;
+  } catch (err) {
+    return "Erreur [CCM3] : " + err;
+  }
+};
+
 export const deleteCard = async (cardId: string) => {
   const url = `https://api.trello.com/1/cards/${cardId}?key=${APIKey}&token=${APIToken}`;
   const params = { method: "DELETE" };
@@ -42,7 +55,7 @@ export const deleteCard = async (cardId: string) => {
     const responseData = await response.json();
     return responseData;
   } catch (err) {
-    return "Erreur [CCM3] : " + err;
+    return "Erreur [CCM4] : " + err;
   }
 };
 

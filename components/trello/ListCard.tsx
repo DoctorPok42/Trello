@@ -3,8 +3,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 import { deleteCard } from "@/utils/trello/cards";
 import { useDispatch } from "react-redux";
-import { editTrelloCards, setTrelloCards } from "@/store/slices/trelloItemsSlice";
+import { editTrelloCards } from "@/store/slices/trelloItemsSlice";
 import { Toast } from "toastify-react-native";
+import CardPopup from "./CardPopup";
+import { useState } from "react";
 
 interface CardsProps {
   title?: string;
@@ -22,13 +24,21 @@ interface CardsProps {
 export const ListCard: React.FC<CardsProps> = ({ title, onPress, editCard, handleCreateCard, creationDate, hideArrow = false, svg, hasData = false, data, noRoundBorder = false }) => {
   let noRoundStyle = {};
   if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
 
-  const handleDeleteCard = async (cardId: string) =>{
+  const handleDeleteCard = async (cardId: string) => {
     const response = await deleteCard(cardId);
-    if (response) dispatch(editTrelloCards({ cardId, cards: data || [] }))
+    if (response) dispatch(editTrelloCards({ cardId, cards: data || [] }));
     Toast.success("Card deleted !");
-  }
+  };
+
+  const ButtonAction = ({ onPress, label, backgroundColor }: { onPress: () => void; label: string; backgroundColor: string; }) => (
+    <TouchableOpacity onPress={onPress} style={[styles.actionButton, { backgroundColor }]}
+    >
+      <Text style={styles.actionText}>{label}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -78,20 +88,32 @@ export const ListCard: React.FC<CardsProps> = ({ title, onPress, editCard, handl
                           key={current.id}
                           renderRightActions={() => (
                             <>
-                              <TouchableOpacity
+                              <ButtonAction
                                 onPress={() => handleDeleteCard(current.id)}
-                                style={styles.deleteButton}
-                              >
-                                <Text style={styles.deleteText}>Delete</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                onPress={() =>
-                                  /* handleDeleteCard() */ current.id
-                                }
-                                style={styles.updateButton}
-                              >
-                                <Text style={styles.updateText}>Update</Text>
-                              </TouchableOpacity>
+                                label="Delete"
+                                backgroundColor="rgb(255, 53, 53)"
+                              />
+                              <ButtonAction
+                                onPress={() => setIsOpen(!isOpen)}
+                                label="Update"
+                                backgroundColor="orange"
+                              />
+                              <ButtonAction
+                                onPress={() => handleDeleteCard(current.id)}
+                                label="Read"
+                                backgroundColor="#377ef6"
+                              />
+                              {isOpen && (
+                                <CardPopup
+                                  cardId={current.id}
+                                  visible={isOpen}
+                                  onClose={() => setIsOpen(false)}
+                                  onSave={(updatedData) => {
+                                    console.log("Saved data:", updatedData);
+                                    setIsOpen(false);
+                                  }}
+                                />
+                              )}
                             </>
                           )}
                         >
@@ -154,7 +176,7 @@ const styles = StyleSheet.create({
   cardsTitleStyle: {
     fontSize: 16,
     color: "rgb(255, 255, 255)",
-    fontWeight: 700,
+    fontWeight: "700",
   },
   cardSubContainer: {
     height: "auto",
@@ -163,6 +185,7 @@ const styles = StyleSheet.create({
     borderColor: "#7791A3",
     padding: 20,
     marginBottom: 5,
+    borderRadius: 10,
   },
   newCardBtn: {
     borderWidth: 1,
@@ -179,39 +202,26 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 24,
-    fontWeight: 600,
+    fontWeight: "600",
     color: "#fff",
     textAlign: "left",
   },
-
   textSmall: {
     fontSize: 20,
-    fontWeight: 600,
+    fontWeight: "600",
     color: "#0F5D81",
     textAlign: "left",
   },
-  deleteButton: {
-    backgroundColor: "rgb(255, 53, 53)",
+  actionButton: {
     justifyContent: "center",
     alignItems: "center",
     width: 80,
     height: 62,
+    borderRadius: 10,
   },
-  deleteText: {
+  actionText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: 500,
-  },
-  updateButton: {
-    backgroundColor: "#377ef6",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 80,
-    height: 62,
-  },
-  updateText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: 500,
+    fontWeight: "500",
   },
 });
