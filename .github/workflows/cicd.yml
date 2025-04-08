@@ -36,7 +36,7 @@ jobs:
         run: npm i --legacy-peer-deps
 
       - name: Run tests
-        run: npm run test -- --coverage
+        run: npm run test:ci
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v3

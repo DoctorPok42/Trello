@@ -41,7 +41,7 @@ class TrelloAPI {
       method,
       headers: { "Content-Type": "application/json" },
     };
-    if (body) {
+    if (body && (method === "POST" || method === "PUT")) {
       options.body = JSON.stringify(body);
     }
 
