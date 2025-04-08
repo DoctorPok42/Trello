@@ -1,13 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const trelloItemsSlice = createSlice({
   name: "trelloItems",
   initialState: {
     data: {
-        boards: [],
-        cards: [],
-        lists: [],
-        organizations: [],
+        boards: [] as any,
+        cards: [] as any,
+        lists: [] as any,
+        organizations: [] as any
     }
   },
   reducers: {
