@@ -2,6 +2,9 @@ import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent } from 
 import { LinearGradient } from "expo-linear-gradient";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 import { deleteCard } from "@/utils/trello/cards";
+import { useDispatch } from "react-redux";
+import { editTrelloCards, setTrelloCards } from "@/store/slices/trelloItemsSlice";
+import { Toast } from "toastify-react-native";
 
 interface CardsProps {
   title?: string;
@@ -19,8 +22,13 @@ interface CardsProps {
 export const ListCard: React.FC<CardsProps> = ({ title, onPress, editCard, handleCreateCard, creationDate, hideArrow = false, svg, hasData = false, data, noRoundBorder = false }) => {
   let noRoundStyle = {};
   if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
+  const dispatch = useDispatch();
 
-  const handleDeleteCard = (cardId: string) => deleteCard(cardId);
+  const handleDeleteCard = async (cardId: string) =>{
+    const response = await deleteCard(cardId);
+    if (response) dispatch(editTrelloCards({ cardId, cards: data || [] }))
+    Toast.success("Card deleted !");
+  }
 
   return (
     <View style={styles.container}>

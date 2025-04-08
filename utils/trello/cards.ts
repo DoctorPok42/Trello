@@ -4,17 +4,17 @@ const APIToken = process.env.EXPO_PUBLIC_REACT_APP_TOKEN;
 
 export const createCardInList = async (name: string, listId: string) => {
   const url = `https://api.trello.com/1/cards?name=${name}&idList=${listId}&key=${APIKey}&token=${APIToken}`;
-  const params = { method: "POST"  ,headers: { 'Accept': 'application/json' }};
+  const params = { method: "POST", headers: { 'Accept': 'application/json' }};
 
   try {
     const response = await fetch(url, params);
     if (response.status === 200){
-      return true;
+      return {responseStatus : "success", data: response.json};
     } 
-    else return false;
+    return {responseStatus : "failed", data: []};
   } catch (err) {
     console.log("Erreur [CCM1] : " + err);
-    return false;
+    return {responseStatus : "failed"};
   }
 };
 

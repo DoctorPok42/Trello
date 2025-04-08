@@ -4,24 +4,30 @@ const trelloItemsSlice = createSlice({
   name: "trelloItems",
   initialState: {
     data: {
-        boards: [] as any,
-        cards: [] as any,
-        lists: [] as any,
-        organizations: [] as any
-    }
+      boards: [] as any,
+      cards: [] as any,
+      lists: [] as any,
+      organizations: [] as any,
+    },
   },
   reducers: {
-    setTrelloItems: (state, action) => {
-        state.data.boards = action.payload.boards;
-        state.data.cards = action.payload.cards;
-        state.data.lists = action.payload.lists;
-        state.data.organizations = action.payload.organizations;
+    setTrelloCards: (state, action) => {
+      state.data.cards = action.payload.cards;
     },
-}});
 
-  
-export const { 
-    setTrelloItems, 
-} = trelloItemsSlice.actions;
+    editTrelloCards: (state, action: PayloadAction<{ cardId: string; cards: any[] }>) => {
+      state.data.cards = action.payload.cards.filter(card => card.id !== action.payload.cardId);
+    },
+
+    setTrelloItems: (state, action) => {
+      state.data.boards = action.payload.boards;
+      state.data.cards = action.payload.cards;
+      state.data.lists = action.payload.lists;
+      state.data.organizations = action.payload.organizations;
+    },
+  },
+});
+
+export const { setTrelloItems, setTrelloCards, editTrelloCards } = trelloItemsSlice.actions;
 
 export default trelloItemsSlice.reducer;
