@@ -8,7 +8,9 @@ export const createCardInList = async (name: string, listId: string) => {
 
   try {
     const response = await fetch(url, params);
-    if (response.status === 200) return true;
+    if (response.status === 200){
+      return true;
+    } 
     else return false;
   } catch (err) {
     console.log("Erreur [CCM1] : " + err);
@@ -30,6 +32,20 @@ export const getCardsFromList = async (listId: string) => {
     return "Erreur [CCM2] : " + err;
   }
 };
+
+export const deleteCard = async (cardId: string) => {
+  const url = `https://api.trello.com/1/cards/${cardId}?key=${APIKey}&token=${APIToken}`;
+  const params = { method: "DELETE" };
+
+  try {
+    const response = await fetch(url, params);
+    const responseData = await response.json();
+    return responseData;
+  } catch (err) {
+    return "Erreur [CCM3] : " + err;
+  }
+};
+
 
 /* 
 export const createCardByBoardId = async (name: string, idBoard: string ) => {

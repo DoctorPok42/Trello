@@ -1,16 +1,7 @@
-import {
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  GestureResponderEvent,
-} from "react-native";
+import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { MaterialSymbolsEditSquareOutlineRounded } from "../icons/MaterialSymbolsEditSquareOutlineRounded";
-import {
-  GestureHandlerRootView,
-  Swipeable,
-} from "react-native-gesture-handler";
+import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
+import { deleteCard } from "@/utils/trello/cards";
 
 interface CardsProps {
   title?: string;
@@ -25,20 +16,11 @@ interface CardsProps {
   noRoundBorder?: boolean;
 }
 
-export const ListCard: React.FC<CardsProps> = ({
-  title,
-  onPress,
-  editCard,
-  handleCreateCard,
-  creationDate,
-  hideArrow = false,
-  svg,
-  hasData = false,
-  data,
-  noRoundBorder = false,
-}) => {
+export const ListCard: React.FC<CardsProps> = ({ title, onPress, editCard, handleCreateCard, creationDate, hideArrow = false, svg, hasData = false, data, noRoundBorder = false }) => {
   let noRoundStyle = {};
   if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
+
+  const handleDeleteCard = (cardId: string) => deleteCard(cardId);
 
   return (
     <View style={styles.container}>
@@ -89,9 +71,7 @@ export const ListCard: React.FC<CardsProps> = ({
                           renderRightActions={() => (
                             <>
                               <TouchableOpacity
-                                onPress={() =>
-                                  /* handleDeleteCard() */ current.id
-                                }
+                                onPress={() => handleDeleteCard(current.id)}
                                 style={styles.deleteButton}
                               >
                                 <Text style={styles.deleteText}>Delete</Text>
@@ -124,8 +104,7 @@ export const ListCard: React.FC<CardsProps> = ({
                               </Text>
                               <TouchableOpacity
                                 onPress={() => editCard?.(current.id)}
-                              >
-                              </TouchableOpacity>
+                              ></TouchableOpacity>
                             </View>
                           </LinearGradient>
                         </Swipeable>

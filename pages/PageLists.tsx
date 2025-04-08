@@ -7,13 +7,7 @@ import { setListId } from "@/store/slices/listSlice";
 import { getCardsFromList, createCardInList } from "@/utils/trello/cards";
 import { createListByBoardId, getListsByBoardId } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Alert,
-  FlatList,
-  GestureResponderEvent,
-} from "react-native";
+import { View, StyleSheet, Alert, FlatList, GestureResponderEvent } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 
@@ -43,7 +37,6 @@ export const PageLists = () => {
         store.getState().list.data.id
       );
       if (response) {
-        await fetchCards(listId);
         Toast.success("Card created.");
       } else Toast.error("Error during card creation.");
     });
@@ -63,6 +56,10 @@ export const PageLists = () => {
     await fetchCards(listId);
     dispatch(setListId({ ...list, id: listId }));
   };
+
+  useEffect(() => {
+    fetchCards(listId);
+  }, [cards]);
 
   useEffect(() => {
     fetchLists();
