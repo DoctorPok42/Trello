@@ -9,8 +9,6 @@ on:
       - "bugfix/*"
       - "hotfix/*"
       - "release/*"
-    branches-ignore:
-      - " ga-ignore-"
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review, unlabeled, labeled]
     branches-ignore:
