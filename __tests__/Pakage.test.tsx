@@ -22,6 +22,13 @@ describe('TrelloAPI', () => {
     expect(token).toBe(fakeToken);
   });
 
+  test('createQueryParams should return correct query string', () => {
+    const params = api.createQueryParams({ extra: 'param' });
+    expect(params).toContain(`key=${fakeKey}`);
+    expect(params).toContain(`token=${fakeToken}`);
+    expect(params).toContain(`extra=param`);
+  });
+
   test('makeRequest should throw an error on network failure', async () => {
     fetch.mockReject(new Error('Network Error'));
     await expect(api.makeRequest('GET', '/test')).rejects.toThrow('Network Error');
