@@ -2,6 +2,13 @@ name: CI/CD Pipeline
 run-name: ${{github.actor}} CI/CD Pipeline on ${{github.ref_name}}
 on:
   push:
+    branches:
+      - "main"
+      - "develop"
+      - "feature/*"
+      - "bugfix/*"
+      - "hotfix/*"
+      - "release/*"
     branches-ignore:
       - " ga-ignore-"
   pull_request:
