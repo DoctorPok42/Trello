@@ -3,7 +3,7 @@ import { MaterialSymbolsArrowCircleRightOutline } from "@/components/icons/Mater
 import { Header } from "@/components/trello/Header";
 import { ListCard } from "@/components/trello/ListCard";
 import { RootState } from "@/store";
-import { setOrganizationData } from "@/store/slices/organizationSlice";
+import { setOrganizationData, setOrganizationName } from "@/store/slices/organizationSlice";
 import { createOrganization, getOrganization } from "@/utils/trello/organizations";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ import { Toast } from "toastify-react-native";
 
 export const PageWorkpaces = () => {
   const [workspaces, setWorkspaces] = useState<any[]>();
-  const organization = useSelector((state: RootState) => state.organization.data);
+  const organization = useSelector((state: RootState) => state.organization);
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -22,9 +22,9 @@ export const PageWorkpaces = () => {
     if (responseData) setWorkspaces(responseData);
   };
 
-  const handleSelectOrganization = (workspaceId: string) => {
-    const dataToSet = { ...organization, id: workspaceId };
-    dispatch(setOrganizationData(dataToSet));
+  const handleSelectOrganization = (workspaceId: string, workspaceName: string) => {
+    dispatch(setOrganizationData({...organization, id: workspaceId}));
+    dispatch(setOrganizationName({...organization, name: workspaceName}));
     navigation.navigate("PageBoards" as never);
   };
 
@@ -46,7 +46,7 @@ export const PageWorkpaces = () => {
 
   return (
     <>
-      <Header title="Workspaces" svg={<IonCreate />} action={handleCreateOrganization} />
+      <Header title="Workspaces" svg={<IonCreate />}/>
         <FlatList
           data={workspaces}
           keyExtractor={(item) => item.id}
@@ -55,7 +55,7 @@ export const PageWorkpaces = () => {
               svg={<MaterialSymbolsArrowCircleRightOutline />}
               title={item.displayName}
               hasData={false}
-              onPress={() => handleSelectOrganization(item.id)}
+              onPress={() => handleSelectOrganization(item.id, item.displayName)}
             />
           )}
         />
