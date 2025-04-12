@@ -17,7 +17,10 @@ import { useDispatch } from "react-redux";
 import { editTrelloCards } from "@/store/slices/trelloItemsSlice";
 import { Toast } from "toastify-react-native";
 import { useState } from "react";
-import { deleteCardTrigger, updateCardTrigger } from "@/store/slices/triggerSlice";
+import {
+  deleteCardTrigger,
+  updateCardTrigger,
+} from "@/store/slices/triggerSlice";
 import { CardPopup } from "./CardPopup";
 
 interface CardsProps {
@@ -57,7 +60,7 @@ export const ListCard: React.FC<CardsProps> = ({
     Toast.success("Card deleted !");
   };
 
-  const renameCard = async(cardId: string) => {
+  const renameCard = async (cardId: string) => {
     Alert.prompt("Rename card", "Type card's new name.", async (name) => {
       const response = await updateCard(cardId, name);
       if (response) {
@@ -130,13 +133,8 @@ export const ListCard: React.FC<CardsProps> = ({
                       data.map((current) => (
                         <Swipeable
                           key={current.id}
-                          renderRightActions={() => (
+                          renderLeftActions={() => (
                             <>
-                              <ButtonAction
-                                onPress={() => handleDeleteCard(current.id)}
-                                label="Delete"
-                                backgroundColor="rgb(255, 53, 53)"
-                              />
                               <ButtonAction
                                 onPress={() => renameCard(current.id)}
                                 label="Rename"
@@ -156,9 +154,18 @@ export const ListCard: React.FC<CardsProps> = ({
                               )}
                             </>
                           )}
+                          renderRightActions={() => (
+                            <>
+                              <ButtonAction
+                                onPress={() => handleDeleteCard(current.id)}
+                                label="Delete"
+                                backgroundColor="rgb(255, 53, 53)"
+                              />
+                            </>
+                          )}
                         >
                           <LinearGradient
-                            colors={["rgb(0, 152, 169)", "rgb(226, 72, 253)"]}
+                            colors={["rgb(62, 84, 119)", "rgb(34, 40, 49)"]}
                             start={{ x: 0, y: 0 }}
                             style={styles.cardSubContainer}
                           >
