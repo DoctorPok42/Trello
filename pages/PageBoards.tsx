@@ -1,18 +1,35 @@
 import { IonCreate } from "@/components/icons/IonCreate";
+import { MaterialSymbolsArrowCircleRightOutline } from "@/components/icons/MaterialSymbolsArrowCircleRightOutline";
 import { Header } from "@/components/trello/Header";
 import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
 import { setBoardData } from "@/store/slices/boardSlice";
 import {
   createBoardByOrganizationId,
+  deleteBoard,
   getBoards,
   getBoardsByID,
+  updateBoard,
 } from "@/utils/trello/boards";
 import { useNavigation } from "expo-router";
-import { useEffect, useState } from "react";
-import { ScrollView, Text, StyleSheet, Alert, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  ScrollView,
+  Text,
+  StyleSheet,
+  Alert,
+  View,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
+import {
+  GestureHandlerRootView,
+  Swipeable,
+} from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
+import { ItemsList } from "./ItemsList";
 
 interface BoardsProps {
   displayAllBoards?: boolean;
@@ -21,16 +38,12 @@ interface BoardsProps {
 export const PageBoards: React.FC<BoardsProps> = ({
   displayAllBoards = false,
 }) => {
-  const [boards, setBoards] = useState<any[]>();
+  const [boards, setBoards] = useState<any[]>([]);
   const board = useSelector((state: RootState) => state.board.data);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [organizationId, setOrganizationId] = useState<string>(
-    store.getState().organization.id
-  );
-  const [organizationName, setOrganizationName] = useState(
-    store.getState().organization.name
-  );
+  const [organizationId, setOrganizationId] = useState<string>(store.getState().organization.id);
+  const [organizationName, setOrganizationName] = useState(store.getState().organization.name);
 
   const fetchBoards = async () => {
     if (!displayAllBoards) {
@@ -58,40 +71,51 @@ export const PageBoards: React.FC<BoardsProps> = ({
     navigation.navigate("PageLists" as never);
   };
 
+  const handleRenameBoard = async (boardID: string) => {
+    Alert.prompt("Rename board", "Type board's new name.", async (name) => {
+      const response = await updateBoard(boardID, name);
+      if (response) {
+        Toast.success("Organization renamed.");
+      } else Toast.error("Error during board's rename.");
+    });
+  };
+
+  const handleDeleteBoard = async (boardID: string) => {
+    const response = await deleteBoard(boardID);
+    if (response) {
+      Toast.success("board deleted.");
+    } else Toast.error("Error during deleting board.");
+  };
+
   useEffect(() => {
     fetchBoards();
   }, []);
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={{paddingBottom: 100}}>
-      {displayAllBoards ? (
-        <Header
-          title="All Boards"
-          svg={<IonCreate />}
-          action={handleCreateBoard}
-        />
-      ) : (
-        <Header
-          title={`Boards in ${organizationName}`}
-          svg={<IonCreate />}
-          action={handleCreateBoard}
-        />
-      )}
-      {board && boards?.length ? (
-        boards.map((board, index) => (
-          <ListCard
-            title={board.name}
-            hideArrow={true}
-            key={index}
-            onPress={() => handleSelectBoard(board.id)}
+    <View style={styles.container}>
+      <View style={{ paddingBottom: 100 }}>
+        {displayAllBoards ? (
+          <Header
+            title="All Boards"
+            svg={<IonCreate />}
+            action={handleCreateBoard}
           />
-        ))
-      ) : (
-        <Text style={styles.noBoard}>No board yet</Text>
-      )}
+        ) : (
+          <Header
+            title={`Boards in ${organizationName}`}
+            svg={<IonCreate />}
+            action={handleCreateBoard}
+          />
+        )}
       </View>
-    </ScrollView>
+      <ItemsList
+        renameAction={handleRenameBoard}
+        deleteAction={handleDeleteBoard}
+        redirectAction={handleSelectBoard}
+        givenItem="Board"
+        data={boards}
+      />
+    </View>
   );
 };
 
