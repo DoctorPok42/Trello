@@ -88,7 +88,7 @@ export const ListCard: React.FC<CardsProps> = ({
   );
 
   return (
-    <View style={styles.container}>
+    <View>
       <LinearGradient
         colors={["rgb(0, 70, 120)", "rgb(13, 160, 128)"]}
         start={{ x: 0, y: 0 }}
@@ -201,9 +201,6 @@ export const ListCard: React.FC<CardsProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 10,
-  },
   subContainer: {
     width: "100%",
     marginVertical: 5,
