@@ -1,14 +1,24 @@
-import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent, Dimensions } from "react-native"; 
-import { LinearGradient } from "expo-linear-gradient"; 
-import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler"; 
-import { deleteCard, updateCard } from "@/utils/trello/cards"; 
-import { useDispatch } from "react-redux"; 
-import { editTrelloCards } from "@/store/slices/trelloItemsSlice"; 
-import { Toast } from "toastify-react-native"; 
-import { useState } from "react"; 
-import { deleteCardTrigger } from "@/store/slices/triggerSlice"; 
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  GestureResponderEvent,
+  Dimensions,
+  Alert,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import {
+  GestureHandlerRootView,
+  Swipeable,
+} from "react-native-gesture-handler";
+import { deleteCard, updateCard } from "@/utils/trello/cards";
+import { useDispatch } from "react-redux";
+import { editTrelloCards } from "@/store/slices/trelloItemsSlice";
+import { Toast } from "toastify-react-native";
+import { useState } from "react";
+import { deleteCardTrigger, updateCardTrigger } from "@/store/slices/triggerSlice";
 import { CardPopup } from "./CardPopup";
-import UpdateCardPopup from "./UpdateCardPopup";
 
 interface CardsProps {
   title?: string;
@@ -37,16 +47,24 @@ export const ListCard: React.FC<CardsProps> = ({
 }) => {
   let noRoundStyle = {};
   if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
-  const [isUpdateCardOpen, setIsUpdateCardOpen] = useState<boolean>(false);
   const [isCardOpen, setIsCardOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const [currentCard, setCurrentCard] = useState();
 
   const handleDeleteCard = async (cardId: string) => {
     const response = await deleteCard(cardId);
     if (response) dispatch(editTrelloCards({ cardId, cards: data || [] }));
     dispatch(deleteCardTrigger(true));
     Toast.success("Card deleted !");
+  };
+
+  const renameCard = async(cardId: string) => {
+    Alert.prompt("Rename card", "Type card's new name.", async (name) => {
+      const response = await updateCard(cardId, name);
+      if (response) {
+        dispatch(updateCardTrigger(true));
+        Toast.success("Card renamed.");
+      } else Toast.error("Error during card rename.");
+    });
   };
 
   const ButtonAction = ({
@@ -120,10 +138,8 @@ export const ListCard: React.FC<CardsProps> = ({
                                 backgroundColor="rgb(255, 53, 53)"
                               />
                               <ButtonAction
-                                onPress={() =>
-                                  setIsUpdateCardOpen(!isUpdateCardOpen)
-                                }
-                                label="Edit"
+                                onPress={() => renameCard(current.id)}
+                                label="Rename"
                                 backgroundColor="orange"
                               />
                               <ButtonAction
@@ -131,16 +147,6 @@ export const ListCard: React.FC<CardsProps> = ({
                                 label="Read"
                                 backgroundColor="#377ef6"
                               />
-                              {isUpdateCardOpen && (
-                                <UpdateCardPopup
-                                  cardId={current.id}
-                                  visible={isUpdateCardOpen}
-                                  onClose={() => setIsUpdateCardOpen(!isUpdateCardOpen)}
-                                  onSave={() => {
-                                    setIsUpdateCardOpen(false);
-                                  }}
-                                />
-                              )}
                               {isCardOpen && (
                                 <CardPopup
                                   card={current}

@@ -1,99 +1,239 @@
-import { updateCardTrigger } from '@/store/slices/triggerSlice';
-import { updateCard } from '@/utils/trello/cards';
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Modal } from 'react-native';
-import { useDispatch } from 'react-redux';
-import { Toast } from 'toastify-react-native';
+import { updateCardTrigger } from "@/store/slices/triggerSlice";
+import { Card } from "@/types/card";
+import { updateCard } from "@/utils/trello/cards";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Button,
+  StyleSheet,
+  Modal,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import { useDispatch } from "react-redux";
 
 interface CardPopupProps {
-    onClose: () => void;
-    onSave: (name: string, description: string) => void;
-    visible: boolean;
-    cardId: string;
+  onClose: () => void;
+  visible: boolean;
+  card: Card;
 }
 
-const CardPopup: React.FC<CardPopupProps> = ({ onClose, visible, cardId }) => {
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const dispatch = useDispatch();
+export const CardPopup: React.FC<CardPopupProps> = ({
+  onClose,
+  visible,
+  card,
+}) => {
+  const [isEdit, setIsEdit] = useState(false);
+  const [editedCard, setEditedCard] = useState<Card>(card);
+  const dispatch = useDispatch();
 
-    const handleSave = () => {
-        handleUpdateCard();
-        onClose();
-    };
-
-    const handleUpdateCard = async() => {
-        const response = await updateCard(cardId, name, description);
+  const handleEditToggle = async () => {
+    if (isEdit) {
+      try {
+        await updateCard(card.id, editedCard.name, editedCard.desc);
         dispatch(updateCardTrigger(true));
-        if (response) Toast.success("Ouraa! Card updated.")
+      } catch (error) {
+        console.error("Failed to update card:", error);
+      }
     }
+    setIsEdit(!isEdit);
+  };
 
-    return (
-        <Modal visible={visible} transparent animationType="slide">
-            <View style={styles.container}>
-                <View style={styles.popup}>
-                    <Text style={styles.title}>Edit Card</Text>
-                    <Text style={styles.label}>Name:</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={name}
-                        onChangeText={setName}
-                    />
-                    <Text style={styles.label}>Description:</Text>
-                    <TextInput
-                        style={[styles.input, styles.textArea]}
-                        value={description}
-                        onChangeText={setDescription}
-                        multiline
-                    />
-                    <View style={styles.actions}>
-                        <Button title="Cancel" onPress={onClose} />
-                        <Button title="Save" onPress={handleSave} />
-                    </View>
-                </View>
+  const handleInputChange = (field: keyof Card, value: string) => {
+    setEditedCard({ ...editedCard, [field]: value });
+  };
+
+  useEffect(() => {
+    card = card
+  }, [isEdit])
+
+  return (
+    <Modal visible={visible} transparent animationType="slide">
+      <View style={styles.container}>
+        <View style={styles.popup}>
+          <ScrollView>
+            <View style={styles.header}>
+              {isEdit ? (
+                <TextInput
+                  style={styles.titleInput}
+                  value={editedCard.name}
+                  onChangeText={(text) => handleInputChange("name", text)}
+                />
+              ) : (
+                <Text style={styles.title}>{card.name || "New Card"}</Text>
+              )}
+              <TouchableOpacity onPress={handleEditToggle}>
+                <Text style={styles.editButton}>
+                  {isEdit ? "Save" : "Edit"}
+                </Text>
+              </TouchableOpacity>
             </View>
-        </Modal>
-    );
+            <View style={{marginBottom: 20}}>
+            {card.dateLastActivity && (
+                  <>
+                    <Text style={{fontSize: 12, fontStyle: "italic", color: "#DDD"}}>Last Activity: {new Date(card.dateLastActivity).toLocaleString("Fr-fr")}</Text>
+                  </>
+                )}
+            </View>
+            {isEdit ? (
+              <>
+                <Text style={styles.label}>Description:</Text>
+                <TextInput
+                  style={styles.valueInput}
+                  value={editedCard.desc}
+                  onChangeText={(text) => handleInputChange("desc", text)}
+                />
+              </>
+            ) : (
+              <>
+                <Text style={styles.label}>Description:</Text>
+                <Text style={styles.value}>
+                  {card.desc || "No description"}
+                </Text>
+                {card.due && (
+                  <>
+                    <Text style={styles.label}>Due:</Text>
+                    <Text style={styles.value}>{card.due}</Text>
+                  </>
+                )}
+                {card.dueReminder && (
+                  <>
+                    <Text style={styles.label}>Due Reminder:</Text>
+                    <Text style={styles.value}>{card.dueReminder}</Text>
+                  </>
+                )}
+                {card.email && (
+                  <>
+                    <Text style={styles.label}>Email:</Text>
+                    <Text style={styles.value}>{card.email}</Text>
+                  </>
+                )}
+                {card.idChecklists.length > 0 && (
+                  <>
+                    <Text style={styles.label}>Checklist IDs:</Text>
+                    <Text style={styles.value}>
+                      {card.idChecklists.join(", ")}
+                    </Text>
+                  </>
+                )}
+                {card.idMembers.length > 0 && (
+                  <>
+                    <Text style={styles.label}>Member IDs:</Text>
+                    <Text style={styles.value}>
+                      {card.idMembers.join(", ")}
+                    </Text>
+                  </>
+                )}
+                {card.idMembersVoted.length > 0 && (
+                  <>
+                    <Text style={styles.label}>Member Votes:</Text>
+                    <Text style={styles.value}>
+                      {card.idMembersVoted.join(", ")}
+                    </Text>
+                  </>
+                )}
+                {card.labels.length > 0 && (
+                  <>
+                    <Text style={styles.label}>Labels:</Text>
+                    <Text style={styles.value}>
+                      {JSON.stringify(card.labels)}
+                    </Text>
+                    <Text style={styles.label}>Label IDs:</Text>
+                    <Text style={styles.value}>{card.idLabels.join(", ")}</Text>
+                  </>
+                )}
+                {card.cardRole && (
+                  <>
+                    <Text style={styles.label}>Card Role:</Text>
+                    <Text style={styles.value}>{card.cardRole}</Text>
+                  </>
+                )}
+                {card.mirrorSourceId && (
+                  <>
+                    <Text style={styles.label}>Mirror Source ID:</Text>
+                    <Text style={styles.value}>{card.mirrorSourceId}</Text>
+                  </>
+                )}
+              </>
+            )}
+          </ScrollView>
+          <View style={styles.actions}>
+            {isEdit ? (
+              <Button title="Cancel" onPress={() => setIsEdit(false)} />
+            ) : (
+              <Button title="Close" onPress={onClose} />
+            )}
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    popup: {
-        width: '80%',
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 20,
-        elevation: 5,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    label: {
-        fontSize: 14,
-        marginBottom: 5,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        padding: 10,
-        marginBottom: 15,
-    },
-    textArea: {
-        height: 80,
-        textAlignVertical: 'top',
-    },
-    actions: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  popup: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    backgroundColor: "#222831",
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
+    height: "90%",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 20,
+    color: "#DDDDDD",
+  },
+  titleInput: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 20,
+    color: "#DDDDDD",
+    borderBottomWidth: 1,
+    borderBottomColor: "#DDDDDD",
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: "500",
+    marginTop: 10,
+    color: "#DDDDDD",
+  },
+  value: {
+    fontSize: 18,
+    marginBottom: 5,
+    color: "#DDDDDD",
+    fontWeight: "200",
+  },
+  valueInput: {
+    fontSize: 18,
+    marginBottom: 5,
+    color: "#DDDDDD",
+    borderBottomWidth: 1,
+    borderBottomColor: "#DDDDDD",
+  },
+  actions: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  editButton: {
+    fontSize: 18,
+    color: "#00ADB5",
+    fontWeight: "500",
+  },
 });
-
-export default CardPopup;
