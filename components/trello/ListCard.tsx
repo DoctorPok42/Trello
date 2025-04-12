@@ -90,7 +90,7 @@ export const ListCard: React.FC<CardsProps> = ({
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={["rgb(0, 70, 120)", "rgb(91, 134, 164)"]}
+        colors={["rgb(0, 70, 120)", "rgb(13, 160, 128)"]}
         start={{ x: 0, y: 0 }}
         style={[styles.cards, noRoundStyle]}
       >
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   cards: {
-    marginTop: 10,
+    height: Dimensions.get("screen").height * 0.09,
     borderRadius: 100,
     borderWidth: 1,
     borderColor: "#7791A3",
@@ -251,6 +251,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
     textAlign: "left",
+    justifyContent: "center",
   },
   textSmall: {
     fontSize: 20,

@@ -29,3 +29,31 @@ export const getOrganization = async () => {
     return false;
   }
 };
+
+export const deleteOrganization = async (organizationID: string) => {
+  const url = `https://api.trello.com/1/organizations/${organizationID}?key=${APIKey}&token=${APIToken}`;
+  const params = { method: "DELETE", headers: { Accept: "application/json" } };
+
+  try {
+    const response = await fetch(url, params);
+    const responseData = await response.json();
+    if (response.status === 200) return responseData;
+  } catch (err) {
+    console.log("[OGZ3] - ", err);
+    return false;
+  }
+};
+
+export const updateOrganization = async (organizationID: string, name?: string) => {
+  const url = `https://api.trello.com/1/organizations/${organizationID}?key=${APIKey}&token=${APIToken}&displayName=${name}`;
+  const params = { method: "PUT", headers: { Accept: "application/json" } };
+
+  try {
+    const response = await fetch(url, params);
+    if (response.status === 200) return true;
+    else return false;
+  } catch (err) {
+    console.log("[OGZ4] - ", err);
+    return false;
+  }
+};
