@@ -108,7 +108,7 @@ export const PageWorkpaces = () => {
 
   return (
     <>
-      <Header title="Workspaces" svg={<IonCreate />} />
+      <Header title="Workspaces" svg={<IonCreate />} action={handleCreateOrganization}/>
       <View style={{ flex: 1, paddingBottom: 100 }}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           {workspaces && workspaces.length > 0 ? (
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   actionButton: {
     justifyContent: "center",
     alignItems: "center",
-    width: Dimensions.get("screen").width * 0.25,
+    width: Dimensions.get("screen").width * 0.3,
     height: Dimensions.get("screen").height * 0.09,
     borderRadius: 100,
   },
