@@ -7,6 +7,7 @@ import { editTrelloCards } from "@/store/slices/trelloItemsSlice";
 import { Toast } from "toastify-react-native";
 import CardPopup from "./CardPopup";
 import { useState } from "react";
+import { deleteCardTrigger } from "@/store/slices/triggerSlice";
 
 interface CardsProps {
   title?: string;
@@ -30,6 +31,7 @@ export const ListCard: React.FC<CardsProps> = ({ title, onPress, editCard, handl
   const handleDeleteCard = async (cardId: string) => {
     const response = await deleteCard(cardId);
     if (response) dispatch(editTrelloCards({ cardId, cards: data || [] }));
+    dispatch(deleteCardTrigger(true))
     Toast.success("Card deleted !");
   };
 

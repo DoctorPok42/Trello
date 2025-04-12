@@ -4,7 +4,7 @@ import { Header } from "@/components/trello/Header";
 import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
 import { setListId } from "@/store/slices/listSlice";
-import { updateCardTrigger } from "@/store/slices/triggerSlice";
+import { deleteCardTrigger, updateCardTrigger } from "@/store/slices/triggerSlice";
 import { getCardsFromList, createCardInList } from "@/utils/trello/cards";
 import { createListByBoardId, getListsByBoardId } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
@@ -24,6 +24,7 @@ export const PageLists = () => {
   useEffect(() => {
     fetchCards(listId)
     dispatch(updateCardTrigger(false));
+    dispatch(deleteCardTrigger(false));
   }, [trigger])
 
   const fetchCards = async (id: string) => {
