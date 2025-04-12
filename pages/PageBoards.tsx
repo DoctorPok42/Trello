@@ -1,45 +1,24 @@
 import { IonCreate } from "@/components/icons/IonCreate";
-import { MaterialSymbolsArrowCircleRightOutline } from "@/components/icons/MaterialSymbolsArrowCircleRightOutline";
 import { Header } from "@/components/trello/Header";
-import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
 import { setBoardData } from "@/store/slices/boardSlice";
-import {
-  createBoardByOrganizationId,
-  deleteBoard,
-  getBoards,
-  getBoardsByID,
-  updateBoard,
-} from "@/utils/trello/boards";
+import { createBoardByOrganizationId, deleteBoard, getBoards, getBoardsByID, updateBoard } from "@/utils/trello/boards";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-  ScrollView,
-  Text,
-  StyleSheet,
-  Alert,
-  View,
-  FlatList,
-  TouchableOpacity,
-  Dimensions,
-} from "react-native";
-import {
-  GestureHandlerRootView,
-  Swipeable,
-} from "react-native-gesture-handler";
+import { StyleSheet, Alert, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 import { ItemsList } from "./ItemsList";
+import { activeTrigger } from "@/store/slices/triggerSlice";
 
 interface BoardsProps {
   displayAllBoards?: boolean;
 }
 
-export const PageBoards: React.FC<BoardsProps> = ({
-  displayAllBoards = false,
-}) => {
+export const PageBoards: React.FC<BoardsProps> = ({ displayAllBoards = false }) => {
   const [boards, setBoards] = useState<any[]>([]);
   const board = useSelector((state: RootState) => state.board.data);
+  const trigger = useSelector((state: RootState) => state.activeTrigger);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [organizationId, setOrganizationId] = useState<string>(store.getState().organization.id);
@@ -75,6 +54,7 @@ export const PageBoards: React.FC<BoardsProps> = ({
     Alert.prompt("Rename board", "Type board's new name.", async (name) => {
       const response = await updateBoard(boardID, name);
       if (response) {
+        dispatch(activeTrigger(true));
         Toast.success("Organization renamed.");
       } else Toast.error("Error during board's rename.");
     });
@@ -83,13 +63,15 @@ export const PageBoards: React.FC<BoardsProps> = ({
   const handleDeleteBoard = async (boardID: string) => {
     const response = await deleteBoard(boardID);
     if (response) {
+      dispatch(activeTrigger(true))
       Toast.success("board deleted.");
     } else Toast.error("Error during deleting board.");
   };
 
   useEffect(() => {
     fetchBoards();
-  }, []);
+    dispatch(activeTrigger(false))
+  }, [trigger]);
 
   return (
     <View style={styles.container}>
