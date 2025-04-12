@@ -1,17 +1,8 @@
-import { updateCardTrigger } from "@/store/slices/triggerSlice";
+import { activeTrigger } from "@/store/slices/triggerSlice";
 import { Card } from "@/types/Card";
 import { updateCard } from "@/utils/trello/cards";
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  Modal,
-  ScrollView,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, Button, StyleSheet, Modal, ScrollView, TextInput, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 
 interface CardPopupProps {
@@ -33,7 +24,7 @@ export const CardPopup: React.FC<CardPopupProps> = ({
     if (isEdit) {
       try {
         await updateCard(card.id, editedCard.name, editedCard.desc);
-        dispatch(updateCardTrigger(true));
+        dispatch(activeTrigger(true));
       } catch (error) {
         console.error("Failed to update card:", error);
       }
