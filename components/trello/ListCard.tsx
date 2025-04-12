@@ -1,13 +1,14 @@
-import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent, Dimensions } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
-import { deleteCard } from "@/utils/trello/cards";
-import { useDispatch } from "react-redux";
-import { editTrelloCards } from "@/store/slices/trelloItemsSlice";
-import { Toast } from "toastify-react-native";
-import CardPopup from "./CardPopup";
-import { useState } from "react";
-import { deleteCardTrigger } from "@/store/slices/triggerSlice";
+import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent, Dimensions } from "react-native"; 
+import { LinearGradient } from "expo-linear-gradient"; 
+import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler"; 
+import { deleteCard, updateCard } from "@/utils/trello/cards"; 
+import { useDispatch } from "react-redux"; 
+import { editTrelloCards } from "@/store/slices/trelloItemsSlice"; 
+import { Toast } from "toastify-react-native"; 
+import { useState } from "react"; 
+import { deleteCardTrigger } from "@/store/slices/triggerSlice"; 
+import { CardPopup } from "./CardPopup";
+import UpdateCardPopup from "./UpdateCardPopup";
 
 interface CardsProps {
   title?: string;
@@ -22,21 +23,44 @@ interface CardsProps {
   noRoundBorder?: boolean;
 }
 
-export const ListCard: React.FC<CardsProps> = ({ title, onPress, editCard, handleCreateCard, creationDate, hideArrow = false, svg, hasData = false, data, noRoundBorder = false }) => {
+export const ListCard: React.FC<CardsProps> = ({
+  title,
+  onPress,
+  editCard,
+  handleCreateCard,
+  creationDate,
+  hideArrow = false,
+  svg,
+  hasData = false,
+  data,
+  noRoundBorder = false,
+}) => {
   let noRoundStyle = {};
   if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isUpdateCardOpen, setIsUpdateCardOpen] = useState<boolean>(false);
+  const [isCardOpen, setIsCardOpen] = useState<boolean>(false);
   const dispatch = useDispatch();
+  const [currentCard, setCurrentCard] = useState();
 
   const handleDeleteCard = async (cardId: string) => {
     const response = await deleteCard(cardId);
     if (response) dispatch(editTrelloCards({ cardId, cards: data || [] }));
-    dispatch(deleteCardTrigger(true))
+    dispatch(deleteCardTrigger(true));
     Toast.success("Card deleted !");
   };
 
-  const ButtonAction = ({ onPress, label, backgroundColor }: { onPress: () => void; label: string; backgroundColor: string; }) => (
-    <TouchableOpacity onPress={onPress} style={[styles.actionButton, { backgroundColor }]}
+  const ButtonAction = ({
+    onPress,
+    label,
+    backgroundColor,
+  }: {
+    onPress: () => void;
+    label: string;
+    backgroundColor: string;
+  }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.actionButton, { backgroundColor }]}
     >
       <Text style={styles.actionText}>{label}</Text>
     </TouchableOpacity>
@@ -96,24 +120,32 @@ export const ListCard: React.FC<CardsProps> = ({ title, onPress, editCard, handl
                                 backgroundColor="rgb(255, 53, 53)"
                               />
                               <ButtonAction
-                                onPress={() => setIsOpen(!isOpen)}
+                                onPress={() =>
+                                  setIsUpdateCardOpen(!isUpdateCardOpen)
+                                }
                                 label="Edit"
                                 backgroundColor="orange"
                               />
                               <ButtonAction
-                                onPress={() => handleDeleteCard(current.id)}
+                                onPress={() => setIsCardOpen(!isCardOpen)}
                                 label="Read"
                                 backgroundColor="#377ef6"
                               />
-                              {isOpen && (
-                                <CardPopup
+                              {isUpdateCardOpen && (
+                                <UpdateCardPopup
                                   cardId={current.id}
-                                  visible={isOpen}
-                                  onClose={() => setIsOpen(false)}
-                                  onSave={(updatedData) => {
-                                    console.log("Saved data:", updatedData);
-                                    setIsOpen(false);
+                                  visible={isUpdateCardOpen}
+                                  onClose={() => setIsUpdateCardOpen(!isUpdateCardOpen)}
+                                  onSave={() => {
+                                    setIsUpdateCardOpen(false);
                                   }}
+                                />
+                              )}
+                              {isCardOpen && (
+                                <CardPopup
+                                  card={current}
+                                  visible={isCardOpen}
+                                  onClose={() => setIsCardOpen(false)}
                                 />
                               )}
                             </>
