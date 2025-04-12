@@ -1,4 +1,4 @@
-import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler";
 import { deleteCard } from "@/utils/trello/cards";
@@ -181,13 +181,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   cardSubContainer: {
-    height: "auto",
+    height: Dimensions.get("screen").height * 0.07,
     backgroundColor: "#fff",
     borderWidth: 1,
     borderColor: "#7791A3",
     padding: 20,
     marginBottom: 5,
-    borderRadius: 10,
   },
   newCardBtn: {
     borderWidth: 1,
@@ -217,9 +216,8 @@ const styles = StyleSheet.create({
   actionButton: {
     justifyContent: "center",
     alignItems: "center",
-    width: 80,
-    height: 62,
-    borderRadius: 10,
+    width: Dimensions.get("screen").width * 0.285,
+    height: Dimensions.get("screen").height * 0.07,
   },
   actionText: {
     color: "#fff",
