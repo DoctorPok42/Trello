@@ -1,39 +1,20 @@
 import { IonCreate } from "@/components/icons/IonCreate";
-import { MaterialSymbolsArrowCircleRightOutline } from "@/components/icons/MaterialSymbolsArrowCircleRightOutline";
 import { Header } from "@/components/trello/Header";
-import { ListCard } from "@/components/trello/ListCard";
 import { RootState } from "@/store";
-import {
-  setOrganizationData,
-  setOrganizationName,
-} from "@/store/slices/organizationSlice";
-import {
-  createOrganization,
-  deleteOrganization,
-  getOrganization,
-  updateOrganization,
-} from "@/utils/trello/organizations";
+import { setOrganizationData, setOrganizationName } from "@/store/slices/organizationSlice";
+import { createOrganization, deleteOrganization, getOrganization, updateOrganization } from "@/utils/trello/organizations";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  FlatList,
-  Alert,
-  View,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-} from "react-native";
-import {
-  GestureHandlerRootView,
-  Swipeable,
-} from "react-native-gesture-handler";
+import { StyleSheet, Alert, View, Dimensions } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
+import { ItemsList } from "./ItemsList";
+import { updateOrganizationTrigger } from "@/store/slices/triggerSlice";
 
 export const PageWorkpaces = () => {
-  const [workspaces, setWorkspaces] = useState<any[]>();
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
   const organization = useSelector((state: RootState) => state.organization);
+  const organizationTrigger = useSelector((state: RootState) => state.activeTrigger.updateOrganizationTrigger)
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -42,11 +23,10 @@ export const PageWorkpaces = () => {
     if (responseData) setWorkspaces(responseData);
   };
 
-  const handleSelectOrganization = (
-    workspaceId: string,
-    workspaceName: string
-  ) => {
+  const handleSelectOrganization = ( workspaceId: string, workspaceName: string | undefined ) => {
+    console.log("getted org name " + workspaceName)
     dispatch(setOrganizationData({ ...organization, id: workspaceId }));
+    if (workspaceName)
     dispatch(setOrganizationName({ ...organization, name: workspaceName }));
     navigation.navigate("PageBoards" as never);
   };
@@ -65,31 +45,11 @@ export const PageWorkpaces = () => {
     );
   };
 
-  useEffect(() => {
-    fetchOrganizations();
-  }, []);
-
-  const ButtonAction = ({
-    onPress,
-    label,
-    backgroundColor,
-  }: {
-    onPress: () => void;
-    label: string;
-    backgroundColor: string;
-  }) => (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.actionButton, { backgroundColor }]}
-    >
-      <Text style={styles.actionText}>{label}</Text>
-    </TouchableOpacity>
-  );
-
   const handleRenameOrganization = async (organizationID: string) => {
     Alert.prompt("Rename card", "Type card's new name.", async (name) => {
       const response = await updateOrganization(organizationID, name);
       if (response) {
+        dispatch(updateOrganizationTrigger(true))
         Toast.success("Organization renamed.");
       } else Toast.error("Error during card rename.");
     });
@@ -104,56 +64,28 @@ export const PageWorkpaces = () => {
 
   useEffect(() => {
     fetchOrganizations();
-  }, [handleRenameOrganization, handleDeleteOrganization]);
+  }, []);
+
+  useEffect(() => {
+    fetchOrganizations();
+    dispatch(updateOrganizationTrigger(false))
+  }, [organizationTrigger]);
 
   return (
     <>
-      <Header title="Workspaces" svg={<IonCreate />} action={handleCreateOrganization}/>
+      <Header
+        title="Workspaces"
+        svg={<IonCreate />}
+        action={handleCreateOrganization}
+      />
       <View style={{ flex: 1, paddingBottom: 100 }}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          {workspaces && workspaces.length > 0 ? (
-            <FlatList
-              data={workspaces}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View style={{ marginVertical: 5, paddingHorizontal: 10 }}>
-                  <Swipeable
-                    key={item.id}
-                    renderLeftActions={() => (
-                      <>
-                        <ButtonAction
-                          onPress={() => handleRenameOrganization(item.id)}
-                          label="Rename"
-                          backgroundColor="orange"
-                        />
-                      </>
-                    )}
-                    renderRightActions={() => (
-                      <>
-                        <ButtonAction
-                          onPress={() => handleDeleteOrganization(item.id)}
-                          label="Delete"
-                          backgroundColor="rgb(255, 53, 53)"
-                        />
-                      </>
-                    )}
-                  >
-                    <ListCard
-                      svg={<MaterialSymbolsArrowCircleRightOutline />}
-                      title={item.displayName}
-                      hasData={false}
-                      onPress={() =>
-                        handleSelectOrganization(item.id, item.displayName)
-                      }
-                    />
-                  </Swipeable>
-                </View>
-              )}
-            />
-          ) : (
-            <Text>No Workspace yet</Text>
-          )}
-        </GestureHandlerRootView>
+        <ItemsList
+          renameAction={handleRenameOrganization}
+          deleteAction={handleDeleteOrganization}
+          redirectAction={handleSelectOrganization}
+          givenItem="Workspaces"
+          data={workspaces}
+        />
       </View>
     </>
   );
