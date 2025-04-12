@@ -17,11 +17,8 @@ import { useDispatch } from "react-redux";
 import { editTrelloCards } from "@/store/slices/trelloItemsSlice";
 import { Toast } from "toastify-react-native";
 import { useState } from "react";
-import {
-  deleteCardTrigger,
-  updateCardTrigger,
-} from "@/store/slices/triggerSlice";
 import { CardPopup } from "./CardPopup";
+import { activeTrigger } from "@/store/slices/triggerSlice";
 
 interface CardsProps {
   title?: string;
@@ -56,7 +53,7 @@ export const ListCard: React.FC<CardsProps> = ({
   const handleDeleteCard = async (cardId: string) => {
     const response = await deleteCard(cardId);
     if (response) dispatch(editTrelloCards({ cardId, cards: data || [] }));
-    dispatch(deleteCardTrigger(true));
+    dispatch(activeTrigger(true));
     Toast.success("Card deleted !");
   };
 
@@ -64,7 +61,7 @@ export const ListCard: React.FC<CardsProps> = ({
     Alert.prompt("Rename card", "Type card's new name.", async (name) => {
       const response = await updateCard(cardId, name);
       if (response) {
-        dispatch(updateCardTrigger(true));
+        dispatch(activeTrigger(true));
         Toast.success("Card renamed.");
       } else Toast.error("Error during card rename.");
     });
