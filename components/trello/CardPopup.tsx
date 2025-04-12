@@ -1,5 +1,5 @@
 import { updateCardTrigger } from "@/store/slices/triggerSlice";
-import { Card } from "@/types/card";
+import { Card } from "@/types/Card";
 import { updateCard } from "@/utils/trello/cards";
 import React, { useEffect, useState } from "react";
 import {
