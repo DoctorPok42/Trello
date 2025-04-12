@@ -10,15 +10,14 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import {
   GestureHandlerRootView,
-  Swipeable,
 } from "react-native-gesture-handler";
 import { deleteCard, updateCard } from "@/utils/trello/cards";
 import { useDispatch } from "react-redux";
 import { editTrelloCards } from "@/store/slices/trelloItemsSlice";
 import { Toast } from "toastify-react-native";
 import { useState } from "react";
-import { CardPopup } from "./CardPopup";
 import { activeTrigger } from "@/store/slices/triggerSlice";
+import { ItemsList } from "@/pages/ItemsList";
 
 interface CardsProps {
   title?: string;
@@ -36,7 +35,6 @@ interface CardsProps {
 export const ListCard: React.FC<CardsProps> = ({
   title,
   onPress,
-  editCard,
   handleCreateCard,
   creationDate,
   hideArrow = false,
@@ -57,7 +55,7 @@ export const ListCard: React.FC<CardsProps> = ({
     Toast.success("Card deleted !");
   };
 
-  const renameCard = async (cardId: string) => {
+  const handleRenameCard = async (cardId: string) => {
     Alert.prompt("Rename card", "Type card's new name.", async (name) => {
       const response = await updateCard(cardId, name);
       if (response) {
@@ -66,23 +64,6 @@ export const ListCard: React.FC<CardsProps> = ({
       } else Toast.error("Error during card rename.");
     });
   };
-
-  const ButtonAction = ({
-    onPress,
-    label,
-    backgroundColor,
-  }: {
-    onPress: () => void;
-    label: string;
-    backgroundColor: string;
-  }) => (
-    <TouchableOpacity
-      onPress={onPress}
-      style={[styles.actionButton, { backgroundColor }]}
-    >
-      <Text style={styles.actionText}>{label}</Text>
-    </TouchableOpacity>
-  );
 
   return (
     <View>
@@ -125,68 +106,7 @@ export const ListCard: React.FC<CardsProps> = ({
                   </LinearGradient>
                 </View>
                 <View style={styles.cardContainer}>
-                  <View>
-                    {data.length > 0 ? (
-                      data.map((current) => (
-                        <Swipeable
-                          key={current.id}
-                          renderLeftActions={() => (
-                            <>
-                              <ButtonAction
-                                onPress={() => renameCard(current.id)}
-                                label="Rename"
-                                backgroundColor="orange"
-                              />
-                              <ButtonAction
-                                onPress={() => setIsCardOpen(!isCardOpen)}
-                                label="Read"
-                                backgroundColor="#377ef6"
-                              />
-                              {isCardOpen && (
-                                <CardPopup
-                                  card={current}
-                                  visible={isCardOpen}
-                                  onClose={() => setIsCardOpen(false)}
-                                />
-                              )}
-                            </>
-                          )}
-                          renderRightActions={() => (
-                            <>
-                              <ButtonAction
-                                onPress={() => handleDeleteCard(current.id)}
-                                label="Delete"
-                                backgroundColor="rgb(255, 53, 53)"
-                              />
-                            </>
-                          )}
-                        >
-                          <LinearGradient
-                            colors={["rgb(62, 84, 119)", "rgb(34, 40, 49)"]}
-                            start={{ x: 0, y: 0 }}
-                            style={styles.cardSubContainer}
-                          >
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Text style={styles.cardsTitleStyle}>
-                                {current.name}
-                              </Text>
-                              <TouchableOpacity
-                                onPress={() => editCard?.(current.id)}
-                              ></TouchableOpacity>
-                            </View>
-                          </LinearGradient>
-                        </Swipeable>
-                      ))
-                    ) : (
-                      <Text>No cards yet</Text>
-                    )}
-                  </View>
+                  <ItemsList readAction={()=>setIsCardOpen(!isCardOpen)} renameAction={handleRenameCard} deleteAction={handleDeleteCard} redirectAction={() => setIsCardOpen(!isCardOpen)} givenItem="Cards" data={data}/>
                 </View>
               </View>
             )}

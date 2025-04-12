@@ -27,3 +27,29 @@ export const getListsByBoardId = async (idBoard: string) => {
     return "Erreur [A1] : " + err;
   }
 };
+
+export const renameList = async (listId: string, name?: string) => {
+  const url = `https://api.trello.com/1/lists/${listId}/name?key=${APIKey}&token=${APIToken}&value=${name}`;
+  const params = { method: "PUT" };
+  try {
+    const response = await fetch(url, params);
+    if (response.status === 200) return true;
+    else return false;
+  } catch (err) {
+    console.log("Erreur [A1] : " + err);
+    return false;
+  }
+};
+/* 
+export const deleteList = async (listId: string) => {
+  const url = `https://api.trello.com/1/lists?name=${name}&idBoard=${idBoard}&key=${APIKey}&token=${APIToken}`;
+  const params = { method: "DELETE" };
+  try {
+    const response = await fetch(url, params);
+    if (response.status === 200) return true;
+    else return false;
+  } catch (err) {
+    console.log("Erreur [A1] : " + err);
+    return false;
+  }
+}; */

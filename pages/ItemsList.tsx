@@ -1,9 +1,21 @@
-import boards from "@/app/(tabs)/boards";
 import { MaterialSymbolsArrowCircleRightOutline } from "@/components/icons/MaterialSymbolsArrowCircleRightOutline";
+import { MaterialSymbolsArrowDropDownCircleOutline } from "@/components/icons/MaterialSymbolsArrowDropDownCircleOutline";
 import { ListCard } from "@/components/trello/ListCard";
+import { Card } from "@/types/Card";
 import React from "react";
-import { FlatList, TouchableOpacity, View, StyleSheet, Text, Dimensions } from "react-native";
-import { GestureHandlerRootView, Swipeable,} from "react-native-gesture-handler";
+import {
+  FlatList,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+  Text,
+  Dimensions,
+  GestureResponderEvent,
+} from "react-native";
+import {
+  GestureHandlerRootView,
+  Swipeable,
+} from "react-native-gesture-handler";
 
 interface ItemsListProps {
   renameAction: (itemId: string) => void;
@@ -11,16 +23,38 @@ interface ItemsListProps {
   redirectAction: (itemId: string, name?: string) => void;
   givenItem: string;
   data: any[];
+  cards?: Card[];
+  handleCreateCard?: (event: GestureResponderEvent) => void;
+  readAction?: () => void;
 }
 
-const ButtonAction = ({ onPress, label, backgroundColor } : 
-    { onPress: () => void; label: string; backgroundColor: string; }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.actionButton, { backgroundColor }]}>
+const ButtonAction = ({
+  onPress,
+  label,
+  backgroundColor,
+}: {
+  onPress: () => void;
+  label: string;
+  backgroundColor: string;
+}) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={[styles.actionButton, { backgroundColor }]}
+  >
     <Text style={styles.actionText}>{label}</Text>
   </TouchableOpacity>
 );
 
-export const ItemsList: React.FC<ItemsListProps> = ({ renameAction, deleteAction, redirectAction, givenItem, data }) => {
+export const ItemsList: React.FC<ItemsListProps> = ({
+  renameAction,
+  deleteAction,
+  redirectAction,
+  readAction,
+  givenItem,
+  data,
+  cards,
+  handleCreateCard,
+}) => {
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -34,6 +68,13 @@ export const ItemsList: React.FC<ItemsListProps> = ({ renameAction, deleteAction
                   key={item.id}
                   renderLeftActions={() => (
                     <>
+                      {readAction && (
+                        <ButtonAction
+                          onPress={() => readAction()}
+                          label="Read"
+                          backgroundColor="#377ef6"
+                        />
+                      )}
                       <ButtonAction
                         onPress={() => renameAction(item.id)}
                         label="Rename"
@@ -51,19 +92,45 @@ export const ItemsList: React.FC<ItemsListProps> = ({ renameAction, deleteAction
                     </>
                   )}
                 >
-                  {givenItem === "Workspaces" ? (
+                  {givenItem === "Workspaces" && (
                     <ListCard
                       svg={<MaterialSymbolsArrowCircleRightOutline />}
                       title={item.displayName}
                       hasData={false}
                       onPress={() => redirectAction(item.id, item.displayName)}
                     />
-                  ) : (
+                  )}
+
+                  {givenItem === "Boards" && (
                     <ListCard
                       svg={<MaterialSymbolsArrowCircleRightOutline />}
                       title={item.name}
                       hasData={false}
                       onPress={() => redirectAction(item.id, item.displayName)}
+                    />
+                  )}
+
+                  {givenItem === "Lists" && (
+                    <ListCard
+                      svg={<MaterialSymbolsArrowDropDownCircleOutline />}
+                      title={item.name}
+                      onPress={() => redirectAction(item.id)}
+                      hasData={item.id === item.id ? true : false}
+                      data={item.id === item.id ? cards : []}
+                      noRoundBorder={true}
+                      handleCreateCard={(e) => handleCreateCard}
+                    />
+                  )}
+
+                  {givenItem === "Cards" && (
+                    <ListCard
+                      svg={<MaterialSymbolsArrowDropDownCircleOutline />}
+                      title={item.name}
+                      onPress={() => redirectAction(item.id)}
+                      hasData={item.id === item.id ? true : false}
+                      data={item.id === item.id ? cards : []}
+                      noRoundBorder={true}
+                      handleCreateCard={(e) => handleCreateCard}
                     />
                   )}
                 </Swipeable>

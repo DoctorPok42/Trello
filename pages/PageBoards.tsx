@@ -82,7 +82,7 @@ export const PageBoards: React.FC<BoardsProps> = ({ displayAllBoards = false }) 
           <Header title={`Boards in ${organizationName}`} svg={<IonCreate />} action={handleCreateBoard} />
         )}
       </View>
-      <ItemsList renameAction={handleRenameBoard} deleteAction={handleDeleteBoard} redirectAction={handleSelectBoard} givenItem="Board" data={boards} />
+      <ItemsList renameAction={handleRenameBoard} deleteAction={handleDeleteBoard} redirectAction={handleSelectBoard} givenItem="Boards" data={boards} />
     </View>
   );
 };

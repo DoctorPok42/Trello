@@ -1,30 +1,25 @@
 import { IonCreate } from "@/components/icons/IonCreate";
-import { MaterialSymbolsArrowDropDownCircleOutline } from "@/components/icons/MaterialSymbolsArrowDropDownCircleOutline";
 import { Header } from "@/components/trello/Header";
-import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
 import { setListId } from "@/store/slices/listSlice";
 import { activeTrigger } from "@/store/slices/triggerSlice";
 import { getCardsFromList, createCardInList } from "@/utils/trello/cards";
-import { createListByBoardId, getListsByBoardId } from "@/utils/trello/lists";
+import { createListByBoardId, getListsByBoardId, renameList } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, FlatList, GestureResponderEvent } from "react-native";
+import { View, StyleSheet, Alert, GestureResponderEvent } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
+import { ItemsList } from "./ItemsList";
+import { Card } from "@/types/Card";
 
 export const PageLists = () => {
   const dispatch = useDispatch();
-  const [lists, setLists] = useState<any[]>();
-  const [cards, setCards] = useState<any[]>();
+  const [lists, setLists] = useState<any[]>([]);
+  const [cards, setCards] = useState<Card[]>([]);
   const boardId = store.getState().board.data.id;
   const listId = store.getState().list.data.id;
   const list = useSelector((state: RootState) => state.list.data);
   const trigger = useSelector((state: RootState) => state.activeTrigger);
-
-  useEffect(() => {
-    fetchCards(listId)
-    dispatch(activeTrigger(false));
-  }, [trigger])
 
   const fetchCards = async (id: string) => {
     const responseData = await getCardsFromList(id);
@@ -65,31 +60,44 @@ export const PageLists = () => {
     dispatch(setListId({ ...list, id: listId }));
   };
 
+  const handleRenameList = async (listID: string) => {
+    Alert.prompt("Rename board", "Type List's new name.", async (name) => {
+      const response = await renameList(listID, name);
+      if (response) {
+        dispatch(activeTrigger(true));
+        Toast.success("Organization renamed.");
+      } else Toast.error("Error during List's rename.");
+    });
+  };
+
+  const handleDeleteList = async (listID: string) => {
+    const response = await renameList(listID);
+    if (response) {
+      dispatch(activeTrigger(true));
+      Toast.success("List deleted.");
+    } else Toast.error("Error during deleting List.");
+  };
+
   useEffect(() => {
     fetchCards(listId);
   }, []);
 
   useEffect(() => {
     fetchLists();
-  }, []);
+    dispatch(activeTrigger(false));
+  }, [trigger]);
 
   return (
     <View style={styles.container}>
       <Header title="My Lists" svg={<IonCreate />} action={handleCreateList} />
-      <FlatList
+      <ItemsList
+        renameAction={handleRenameList}
+        deleteAction={handleDeleteList}
+        redirectAction={handleSelectList}
+        givenItem="Lists"
         data={lists}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ListCard
-            svg={<MaterialSymbolsArrowDropDownCircleOutline />}
-            title={item.name}
-            onPress={() => handleSelectList(item.id)}
-            hasData={list.id === item.id ? true : false}
-            data={list.id === item.id ? cards : []}
-            noRoundBorder={true}
-            handleCreateCard={handleCreateCard}
-          />
-        )}
+        cards={cards}
+        handleCreateCard={handleCreateCard}
       />
     </View>
   );
