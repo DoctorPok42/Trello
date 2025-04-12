@@ -9,12 +9,12 @@ import { StyleSheet, Alert, View, Dimensions } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 import { ItemsList } from "./ItemsList";
-import { updateOrganizationTrigger } from "@/store/slices/triggerSlice";
+import { activeTrigger } from "@/store/slices/triggerSlice";
 
 export const PageWorkpaces = () => {
   const [workspaces, setWorkspaces] = useState<any[]>([]);
   const organization = useSelector((state: RootState) => state.organization);
-  const organizationTrigger = useSelector((state: RootState) => state.activeTrigger.updateOrganizationTrigger)
+  const trigger = useSelector((state: RootState) => state.activeTrigger)
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -49,7 +49,7 @@ export const PageWorkpaces = () => {
     Alert.prompt("Rename card", "Type card's new name.", async (name) => {
       const response = await updateOrganization(organizationID, name);
       if (response) {
-        dispatch(updateOrganizationTrigger(true))
+        dispatch(activeTrigger(true))
         Toast.success("Organization renamed.");
       } else Toast.error("Error during card rename.");
     });
@@ -58,6 +58,7 @@ export const PageWorkpaces = () => {
   const handleDeleteOrganization = async (organizationID: string) => {
     const response = await deleteOrganization(organizationID);
     if (response) {
+      dispatch(activeTrigger(true))
       Toast.success("Organization deleted.");
     } else Toast.error("Error during deleting organization.");
   };
@@ -68,8 +69,8 @@ export const PageWorkpaces = () => {
 
   useEffect(() => {
     fetchOrganizations();
-    dispatch(updateOrganizationTrigger(false))
-  }, [organizationTrigger]);
+    dispatch(activeTrigger(false))
+  }, [trigger]);
 
   return (
     <>
