@@ -32,7 +32,7 @@ export const createBoardByOrganizationId = async (name: string, idOrganization: 
   }
 };
 
-export const getBoards = async (organizationId: string) => {
+export const getBoardsByID = async (organizationId: string) => {
   const url = `https://api.trello.com/1/organizations/${organizationId}/boards?key=${APIKey}&token=${APIToken}`;
   const params = { method: "GET", headers: { Accept: "application/json" } };
 
@@ -42,5 +42,18 @@ export const getBoards = async (organizationId: string) => {
     return responseData;
   } catch (err) {
     return "Erreur [A2] : " + err;
+  }
+};
+
+export const getBoards = async () => {
+  const url = `https://api.trello.com/1/members/me/boards?key=${APIKey}&token=${APIToken}`;
+  const params = { method: "GET", headers: { Accept: "application/json" } };
+
+  try {
+    const response = await fetch(url, params);
+    const responseData = await response.json();
+    return responseData;
+  } catch (err) {
+    return "Erreur [A3] : " + err;
   }
 };
