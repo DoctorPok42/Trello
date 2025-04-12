@@ -1,22 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+interface OrganisationState {
+  id: string;
+  name: string | null;
+}
+
+const initialState: OrganisationState = {
+  id: "",
+  name: null,
+};
+
 const organizationSlice = createSlice({
   name: "organization",
-  initialState: {
-    data: {
-      id: "",
-      displayName: "",
-    }
-  },
+  initialState,
   reducers: {
     setOrganizationData: (state, action) => {
-      state.data.id = action.payload.id;
+      state.id = action.payload.id;
     },
-}});
+    setOrganizationName: (state, action) => {
+      state.name = action.payload.name;
+    },
+  },
+});
 
-  
-export const { 
-setOrganizationData, 
-} = organizationSlice.actions;
+export const { setOrganizationData, setOrganizationName } =
+  organizationSlice.actions;
 
 export default organizationSlice.reducer;
