@@ -15,8 +15,8 @@ export const Cards: React.FC<CardsProps> = ({ title, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 150,  // Taille fixe pour un carré
-    aspectRatio: 1, // Assure que la hauteur = largeur
+    width: 150, 
+    aspectRatio: 1, 
     backgroundColor: "#00ADB5",
     borderRadius: 5,
     alignItems: "center",

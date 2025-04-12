@@ -95,7 +95,7 @@ export const ListCard: React.FC<CardsProps> = ({ title, onPress, editCard, handl
                               />
                               <ButtonAction
                                 onPress={() => setIsOpen(!isOpen)}
-                                label="Update"
+                                label="Edit"
                                 backgroundColor="orange"
                               />
                               <ButtonAction

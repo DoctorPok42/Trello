@@ -4,6 +4,7 @@ import boardSlice from "@/store/slices/boardSlice";
 import listSlice from "@/store/slices/listSlice";
 import cardSlice from "@/store/slices/cardSlice";
 import trelloItemsSlice from "@/store/slices/trelloItemsSlice";
+import triggerSlice from "@/store/slices/triggerSlice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     list: listSlice,
     card: cardSlice,
     trelloItems: trelloItemsSlice,
+    activeTrigger: triggerSlice,
   },
 });
 

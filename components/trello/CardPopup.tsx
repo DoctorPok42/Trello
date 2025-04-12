@@ -1,6 +1,8 @@
+import { updateCardTrigger } from '@/store/slices/triggerSlice';
 import { updateCard } from '@/utils/trello/cards';
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Modal } from 'react-native';
+import { useDispatch } from 'react-redux';
 import { Toast } from 'toastify-react-native';
 
 interface CardPopupProps {
@@ -13,6 +15,7 @@ interface CardPopupProps {
 const CardPopup: React.FC<CardPopupProps> = ({ onClose, visible, cardId }) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const dispatch = useDispatch();
 
     const handleSave = () => {
         handleUpdateCard();
@@ -21,6 +24,7 @@ const CardPopup: React.FC<CardPopupProps> = ({ onClose, visible, cardId }) => {
 
     const handleUpdateCard = async() => {
         const response = await updateCard(cardId, name, description);
+        dispatch(updateCardTrigger(true));
         if (response) Toast.success("Ouraa! Card updated.")
     }
 

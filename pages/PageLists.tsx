@@ -4,16 +4,11 @@ import { Header } from "@/components/trello/Header";
 import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
 import { setListId } from "@/store/slices/listSlice";
+import { updateCardTrigger } from "@/store/slices/triggerSlice";
 import { getCardsFromList, createCardInList } from "@/utils/trello/cards";
 import { createListByBoardId, getListsByBoardId } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Alert,
-  FlatList,
-  GestureResponderEvent,
-} from "react-native";
+import { View, StyleSheet, Alert, FlatList, GestureResponderEvent } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 
@@ -24,7 +19,12 @@ export const PageLists = () => {
   const boardId = store.getState().board.data.id;
   const listId = store.getState().list.data.id;
   const list = useSelector((state: RootState) => state.list.data);
-  const cardsData = useSelector((state: RootState) => state.trelloItems.data.cards);
+  const trigger = useSelector((state: RootState) => state.activeTrigger);
+
+  useEffect(() => {
+    fetchCards(listId)
+    dispatch(updateCardTrigger(false));
+  }, [trigger])
 
   const fetchCards = async (id: string) => {
     const responseData = await getCardsFromList(id);
@@ -67,7 +67,7 @@ export const PageLists = () => {
 
   useEffect(() => {
     fetchCards(listId);
-  }, [cardsData]);
+  }, []);
 
   useEffect(() => {
     fetchLists();
