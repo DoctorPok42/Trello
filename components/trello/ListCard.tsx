@@ -94,7 +94,7 @@ export const ListCard: React.FC<CardsProps> = ({
               <View>
                 <View>
                   <LinearGradient
-                    colors={["rgb(3, 25, 45)", "rgb(5, 108, 152)"]}
+                    colors={["rgb(3, 25, 45)", "rgb(4, 99, 140)"]}
                     start={{ x: 0, y: 0 }}
                     style={[styles.newCardBtn]}
                   >
