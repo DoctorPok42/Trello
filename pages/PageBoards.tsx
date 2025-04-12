@@ -77,26 +77,12 @@ export const PageBoards: React.FC<BoardsProps> = ({ displayAllBoards = false }) 
     <View style={styles.container}>
       <View style={{ paddingBottom: 100 }}>
         {displayAllBoards ? (
-          <Header
-            title="All Boards"
-            svg={<IonCreate />}
-            action={handleCreateBoard}
-          />
+          <Header title="All Boards" svg={<IonCreate />} action={handleCreateBoard} />
         ) : (
-          <Header
-            title={`Boards in ${organizationName}`}
-            svg={<IonCreate />}
-            action={handleCreateBoard}
-          />
+          <Header title={`Boards in ${organizationName}`} svg={<IonCreate />} action={handleCreateBoard} />
         )}
       </View>
-      <ItemsList
-        renameAction={handleRenameBoard}
-        deleteAction={handleDeleteBoard}
-        redirectAction={handleSelectBoard}
-        givenItem="Board"
-        data={boards}
-      />
+      <ItemsList renameAction={handleRenameBoard} deleteAction={handleDeleteBoard} redirectAction={handleSelectBoard} givenItem="Board" data={boards} />
     </View>
   );
 };
