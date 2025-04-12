@@ -5,6 +5,8 @@ const triggerSlice = createSlice({
   initialState: {
     updateCardTrigger: false,
     deleteCardTrigger: false,
+    updateOrganizationTrigger: false,
+
   },
   reducers: {
     updateCardTrigger: (state, action) => {
@@ -13,9 +15,12 @@ const triggerSlice = createSlice({
     deleteCardTrigger: (state, action) => {
       state.deleteCardTrigger = action.payload;
     },
+    updateOrganizationTrigger: (state, action) => {
+      state.updateOrganizationTrigger = action.payload;
+    }
   },
 });
 
-export const { deleteCardTrigger, updateCardTrigger } = triggerSlice.actions;
+export const { deleteCardTrigger, updateCardTrigger, updateOrganizationTrigger } = triggerSlice.actions;
 
 export default triggerSlice.reducer;
