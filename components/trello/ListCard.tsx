@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   actionButton: {
     justifyContent: "center",
     alignItems: "center",
-    width: Dimensions.get("screen").width * 0.285,
+    width: Dimensions.get("screen").width * 0.25,
     height: Dimensions.get("screen").height * 0.07,
   },
   actionText: {
