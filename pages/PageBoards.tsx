@@ -3,32 +3,52 @@ import { Header } from "@/components/trello/Header";
 import { ListCard } from "@/components/trello/ListCard";
 import store, { RootState } from "@/store";
 import { setBoardData } from "@/store/slices/boardSlice";
-import { createBoardByOrganizationId, getBoards } from "@/utils/trello/boards";
+import {
+  createBoardByOrganizationId,
+  getBoards,
+  getBoardsByID,
+} from "@/utils/trello/boards";
 import { useNavigation } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { ScrollView, Text, StyleSheet, Alert, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 
-export const PageBoards = () => {
+interface BoardsProps {
+  displayAllBoards?: boolean;
+}
+
+export const PageBoards: React.FC<BoardsProps> = ({
+  displayAllBoards = false,
+}) => {
   const [boards, setBoards] = useState<any[]>();
   const board = useSelector((state: RootState) => state.board.data);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const organizationId = store.getState().organization.data.id;
+  const [organizationId, setOrganizationId] = useState<string>(
+    store.getState().organization.id
+  );
+  const [organizationName, setOrganizationName] = useState(
+    store.getState().organization.name
+  );
 
   const fetchBoards = async () => {
-    const responseData = await getBoards(organizationId);
-    if (responseData) setBoards(responseData);
+    if (!displayAllBoards) {
+      const responseData = await getBoardsByID(organizationId);
+      if (responseData) setBoards(responseData);
+    } else {
+      const responseData = await getBoards();
+      if (responseData) setBoards(responseData);
+    }
   };
 
   const handleCreateBoard = async () => {
     Alert.prompt("New board", "Type board's name.", async (name) => {
       const response = await createBoardByOrganizationId(name, organizationId);
       if (response) {
-        await fetchBoards()
-        Toast.success("Board created.")
-      } else Toast.error("Error during board creation.")
+        await fetchBoards();
+        Toast.success("Board created.");
+      } else Toast.error("Error during board creation.");
     });
   };
 
@@ -43,8 +63,21 @@ export const PageBoards = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Header title="My Boards" svg={<IonCreate />} action={handleCreateBoard} />
+    <ScrollView style={styles.container}>
+      <View style={{paddingBottom: 100}}>
+      {displayAllBoards ? (
+        <Header
+          title="All Boards"
+          svg={<IonCreate />}
+          action={handleCreateBoard}
+        />
+      ) : (
+        <Header
+          title={`Boards in ${organizationName}`}
+          svg={<IonCreate />}
+          action={handleCreateBoard}
+        />
+      )}
       {board && boards?.length ? (
         boards.map((board, index) => (
           <ListCard
@@ -57,7 +90,8 @@ export const PageBoards = () => {
       ) : (
         <Text style={styles.noBoard}>No board yet</Text>
       )}
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 
