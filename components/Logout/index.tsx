@@ -1,4 +1,4 @@
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, Alert } from 'react-native';
 import { Button, Icon } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -9,13 +9,23 @@ const Logout = () => {
   const navigation = useNavigation() as any;
   const [isToken, setIsToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const checkToken = async () => {
-      const storedToken = await AsyncStorage.getItem("trello_token");
-      if (storedToken) {
-        setIsToken(storedToken);
-      }
+  const checkToken = async () => {
+    const storedToken = await AsyncStorage.getItem("trello_token");
+    if (storedToken) {
+      setIsToken(storedToken);
     }
+  }
+
+  useEffect(() => {
+    checkToken();
+    const unsubscribe = navigation.addListener('focus', () => {
+      checkToken();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
     checkToken();
   }, []);
 

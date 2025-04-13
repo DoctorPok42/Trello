@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Vibration, ScrollView, RefreshControl, Alert, Text, Dimensions } from 'react-native';
-import { PaperProvider, Searchbar, Menu, Divider } from 'react-native-paper';
+import { View, StyleSheet, Vibration, ScrollView, RefreshControl, Alert, Dimensions } from 'react-native';
+import { PaperProvider, Searchbar, Menu, Divider, Text } from 'react-native-paper';
 import Login from './Login';
-import { TrelloAPI } from "./trello_module";
+import TrelloAPI from "./trello_module";
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
@@ -225,6 +225,7 @@ const Base = () => {
                     style={{
                       marginLeft: Dimensions.get('window').width / 2 - 80,
                     }}
+                    theme={{ colors: { elevation: { level2: '#69c8ff' } } }}
                     anchor={
                       <Board
                         board={board}

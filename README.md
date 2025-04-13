@@ -5,7 +5,7 @@ This is a simple Trello-like application built with React Native and Expo. It al
 ## Features
 
 - Create and manage workspaces
-- Create and manage boards within workspaces
+- Create and manage boards within workspaces and with templates
 - Create and manage lists within boards
 - Create and manage cards within lists
 - Edit and delete cards, lists, and boards

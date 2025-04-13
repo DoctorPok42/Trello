@@ -7,7 +7,7 @@ interface LoginProps {
   onTokenReceived: (token: string) => void;
 };
 
-const Login: React.FC<LoginProps> = ({
+const Login = ({
   onTokenReceived
 }: LoginProps) => {
   useEffect(() => {
