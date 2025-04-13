@@ -4,20 +4,19 @@ const APIToken = process.env.EXPO_PUBLIC_REACT_APP_TOKEN;
 
 export const createCardInList = async (name: string, listId: string) => {
   const url = `https://api.trello.com/1/cards?name=${name}&idList=${listId}&key=${APIKey}&token=${APIToken}`;
-  const params = { method: "POST", headers: { 'Accept': 'application/json' }};
+  const params = { method: "POST", headers: { Accept: "application/json" } };
 
   try {
     const response = await fetch(url, params);
-    if (response.status === 200){
-      return {responseStatus : "success", data: response.json};
-    } 
-    return {responseStatus : "failed", data: []};
+    if (response.status === 200) {
+      return { responseStatus: "success", data: response.json };
+    }
+    return { responseStatus: "failed", data: [] };
   } catch (err) {
     console.log("Erreur [CCM1] : " + err);
-    return {responseStatus : "failed"};
+    return { responseStatus: "failed" };
   }
 };
-
 
 //
 export const getCardsFromList = async (listId: string) => {
@@ -33,7 +32,11 @@ export const getCardsFromList = async (listId: string) => {
   }
 };
 
-export const updateCard = async (cardId: string, name?: string, desc?:string) => {
+export const updateCard = async (
+  cardId: string,
+  name?: string,
+  desc?: string
+) => {
   const url = `https://api.trello.com/1/cards/${cardId}?key=${APIKey}&token=${APIToken}&name=${name}&desc=${desc}`;
   const params = { method: "PUT", headers: { Accept: "application/json" } };
 
@@ -58,35 +61,3 @@ export const deleteCard = async (cardId: string) => {
     return "Erreur [CCM4] : " + err;
   }
 };
-
-
-/* 
-export const createCardByBoardId = async (name: string, idBoard: string ) => {
-  const url = `https://api.trello.com/1/boards/?name=${name}&idOrganization=${idOrganization}&key=${APIKey}&token=${APIToken}`;
-  const params = { method: "POST" };
-
-  try {
-    const response = await fetch(url, params);
-    if (response.status === 200) return true;
-    else return false;
-  } catch (err) {
-    console.log("Erreur [A1] : " + err);
-    return false;
-  }
-};
-
-export const getCardByBoardId = async (name: string, idBoard: string ) => {
-  const url = `https://api.trello.com/1/boards/?name=${name}&idOrganization=${idOrganization}&key=${APIKey}&token=${APIToken}`;
-  const params = { method: "POST" };
-
-  try {
-    const response = await fetch(url, params);
-    if (response.status === 200) return true;
-    else return false;
-  } catch (err) {
-    console.log("Erreur [A1] : " + err);
-    return false;
-  }
-};
-
- */
