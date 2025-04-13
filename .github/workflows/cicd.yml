@@ -2,9 +2,15 @@ name: CI/CD Pipeline
 run-name: ${{github.actor}} CI/CD Pipeline on ${{github.ref_name}}
 on:
   push:
-    branches-ignore:
-      - " ga-ignore-"
+    branches:
+      - "main"
+      - "develop"
+      - "feature/*"
+      - "bugfix/*"
+      - "hotfix/*"
+      - "release/*"
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, unlabeled, labeled]
     branches-ignore:
       - " ga-ignore-"
 
@@ -21,6 +27,34 @@ jobs:
             echo "Size of the repository is too big"
             exit 1
           fi
+
+  test:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm i --legacy-peer-deps
+
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   push_to_mirror:
     runs-on: self-hosted
