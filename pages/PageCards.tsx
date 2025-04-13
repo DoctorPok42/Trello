@@ -34,7 +34,6 @@ export const PageCards: React.FC<CardsProps> = ({ listId, cardsList }) => {
       );
       if (response) {
         await fetchCards();
-        Toast.success("Card created.");
       } else Toast.error("Error during card creation.");
     });
   };

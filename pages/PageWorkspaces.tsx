@@ -49,7 +49,6 @@ export const PageWorkspaces = () => {
       const response = await updateOrganization(organizationID, name);
       if (response) {
         dispatch(activeTrigger(true))
-        Toast.success("Organization renamed.");
       } else Toast.error("Error during card rename.");
     });
   };
@@ -58,7 +57,6 @@ export const PageWorkspaces = () => {
     const response = await deleteOrganization(organizationID);
     if (response) {
       dispatch(activeTrigger(true))
-      Toast.success("Organization deleted.");
     } else Toast.error("Error during deleting organization.");
   };
 

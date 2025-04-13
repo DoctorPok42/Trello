@@ -45,7 +45,6 @@ export const PageBoards: React.FC<BoardsProps> = ({
       const response = await createBoardByOrganizationId(name, organizationId);
       if (response) {
         await fetchBoards();
-        Toast.success("Board created.");
       } else Toast.error("Error during board creation.");
     });
   };
@@ -61,7 +60,6 @@ export const PageBoards: React.FC<BoardsProps> = ({
       const response = await updateBoard(boardID, name);
       if (response) {
         dispatch(activeTrigger(true));
-        Toast.success("Organization renamed.");
       } else Toast.error("Error during board's rename.");
     });
   };
@@ -70,7 +68,6 @@ export const PageBoards: React.FC<BoardsProps> = ({
     const response = await deleteBoard(boardID);
     if (response) {
       dispatch(activeTrigger(true));
-      Toast.success("board deleted.");
     } else Toast.error("Error during deleting board.");
   };
 
