@@ -94,7 +94,7 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
                       <ButtonAction
                         onPress={() => deleteAction(item.id)}
                         label="Delete"
-                        backgroundColor="rgb(255, 53, 53)"
+                        backgroundColor="hsl(0, 100.00%, 60.40%)"
                       />
                     </>
                   )}
@@ -149,7 +149,7 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
             )}
           />
         ) : (
-            <Text style={{ textAlign: "center", marginTop: 20, fontSize: 16, color: "gray" }}>
+            <Text style={{ textAlign: "center", marginVertical: 20, fontSize: 16, color: "gray" }}>
             No {givenItem} yet
             </Text>
         )}

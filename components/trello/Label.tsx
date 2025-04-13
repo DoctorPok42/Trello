@@ -41,7 +41,7 @@ export const Label: React.FC<CardsProps> = ({
           <LinearGradient
             colors={["rgb(8, 15, 23)", "rgb(8, 15, 23)", "rgb(8, 15, 23)", "rgb(21, 52, 87)", "rgb(3, 25, 50)"]}
             start={{ x: 0, y: 0 }}
-            style={[styles.cards, noRoundStyle, { height: "auto" }]}
+            style={card ? [styles.cards, noRoundStyle, { height: "auto" }] : [{paddingBottom: 10}]}
           >
             <TouchableOpacity
               style={[styles.subContainer]}
@@ -71,7 +71,7 @@ export const Label: React.FC<CardsProps> = ({
           <LinearGradient
             colors={["rgb(18, 25, 28)", "rgb(52, 67, 91)"]}
             start={{ x: 0, y: 0 }}
-            style={ card ? [styles.cards, {marginBottom: 20, borderWidth: 1}] : [styles.cards]} >
+            style={ card ? [styles.cards, {marginBottom: 5, borderWidth: 1}] : [styles.cards]} >
             <TouchableOpacity
               style={styles.subContainer}
               onPress={onPress}

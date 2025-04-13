@@ -2,12 +2,7 @@ import { IonCreate } from "@/components/icons/IonCreate";
 import { Header } from "@/components/trello/Header";
 import store, { RootState } from "@/store";
 import { activeTrigger } from "@/store/slices/triggerSlice";
-import {
-  createListByBoardId,
-  getLists,
-  getListsByBoardId,
-  renameList,
-} from "@/utils/trello/lists";
+import { createListByBoardId, getLists, getListsByBoardId, renameList } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
 import { View, StyleSheet, Alert, ImageBackground } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,7 +39,6 @@ export const PageLists: React.FC<PageListsProps> = ({
       const response = await createListByBoardId(name, boardId);
       if (response) {
         await fetchLists();
-        Toast.success("List created.");
       } else Toast.error("Error during list creation.");
     });
   };
@@ -54,7 +48,6 @@ export const PageLists: React.FC<PageListsProps> = ({
       const response = await renameList(listID, name);
       if (response) {
         dispatch(activeTrigger(true));
-        Toast.success("Organization renamed.");
       } else Toast.error("Error during List's rename.");
     });
   };
@@ -63,7 +56,6 @@ export const PageLists: React.FC<PageListsProps> = ({
     const response = await renameList(listID);
     if (response) {
       dispatch(activeTrigger(true));
-      Toast.success("List deleted.");
     } else Toast.error("Error during deleting List.");
   };
 
