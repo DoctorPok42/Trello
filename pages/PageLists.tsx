@@ -52,7 +52,7 @@ export const PageLists: React.FC<PageListsProps> = ({
     });
   };
 
-  const handleDeleteList = async (listID: string) => {
+  const handleArchiveList = async (listID: string) => {
     const response = await renameList(listID);
     if (response) {
       dispatch(activeTrigger(true));
@@ -82,7 +82,7 @@ export const PageLists: React.FC<PageListsProps> = ({
       )}
       <ManageLabels
         renameAction={handleRenameList}
-        deleteAction={handleDeleteList}
+        deleteAction={handleArchiveList}
         givenItem="Lists"
         data={lists}
       />
@@ -100,11 +100,5 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#ffffff",
     textAlign: "center",
-  },
-  noList: {
-    color: "gray",
-    fontSize: 20,
-    textAlign: "center",
-    marginTop: 20,
   },
 });

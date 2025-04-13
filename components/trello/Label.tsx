@@ -46,7 +46,6 @@ export const Label: React.FC<CardsProps> = ({
               style={[styles.subContainer]}
               onPress={() => {
                 setIsOpen(!isOpen)
-              
               }}
               activeOpacity={0.7}
             >
@@ -104,19 +103,6 @@ const styles = StyleSheet.create({
   cards: {
     borderColor: "#7791A3",
   },
-  cardsTitleStyle: {
-    fontSize: 16,
-    color: "rgb(255, 255, 255)",
-    fontWeight: "700",
-  },
-  cardSubContainer: {
-    height: Dimensions.get("screen").height * 0.7,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#7791A3",
-    padding: 20,
-    marginBottom: 5,
-  },
   text: {
     fontSize: 18,
     fontWeight: "400",
@@ -129,20 +115,5 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#0F5D81",
     textAlign: "left",
-  },
-  actionButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: Dimensions.get("screen").width * 0.25,
-    height: Dimensions.get("screen").height * 0.07,
-  },
-  actionText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  newCardText: {
-    fontSize: 14,
-    color: "#fff",
   },
 });
