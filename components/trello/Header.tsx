@@ -21,14 +21,12 @@ export const Header: React.FC<HeaderProps> = ({ title, svg, action }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#015A8E",
+    backgroundColor: "transparent",
     width: "100%",
     height: 60,
     justifyContent: "center",
     paddingHorizontal: 20,
     marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "gray"
   },
   text: {
     fontSize: 23,

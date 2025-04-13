@@ -1,11 +1,13 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ImageBackground } from "react-native";
 import { PageWorkspaces } from "./PageWorkspaces";
 
 export const PageHome = () => {
   return (
+    <ImageBackground source={require("@/assets/images/background.png")} style={{ flex: 1 }}>
       <View style={styles.container}>
-          <PageWorkspaces />
+        <PageWorkspaces />
       </View>
+    </ImageBackground>
   );
 };
 
@@ -13,12 +15,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: "auto",
-    backgroundColor: "#fff",
   },
   subContainer: {
     borderWidth: 1,
-    borderColor: '#fff',
-    width: "auto"
+    borderColor: "#fff",
+    width: "auto",
   },
   text: {
     fontSize: 20,

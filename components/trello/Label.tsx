@@ -19,17 +19,7 @@ interface CardsProps {
   card?:Card;
 }
 
-export const Label: React.FC<CardsProps> = ({
-  title,
-  onPress,
-  creationDate,
-  hideArrow = false,
-  svg,
-  noRoundBorder = false,
-  listId,
-  data,
-  card
-}) => {
+export const Label: React.FC<CardsProps> = ({ title, onPress, creationDate, hideArrow = false, svg, noRoundBorder = false, listId, data, card }) => {
   let noRoundStyle = {};
   if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -39,7 +29,7 @@ export const Label: React.FC<CardsProps> = ({
       {listId ? (
         <>
           <LinearGradient
-            colors={["rgb(0, 70, 120)", "rgb(13, 160, 128)"]}
+            colors={["rgb(0, 70, 120)", "rgb(29, 77, 66)"]}
             start={{ x: 0, y: 0 }}
             style={[styles.cards, noRoundStyle]}
           >
