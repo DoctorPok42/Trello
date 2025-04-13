@@ -1,8 +1,9 @@
 import { MaterialSymbolsArrowCircleRightOutline } from "@/components/icons/MaterialSymbolsArrowCircleRightOutline";
 import { MaterialSymbolsArrowDropDownCircleOutline } from "@/components/icons/MaterialSymbolsArrowDropDownCircleOutline";
-import { ListCard } from "@/components/trello/ListCard";
+import { CardPopup } from "@/components/trello/CardPopup";
+import { Label } from "@/components/trello/Label";
 import { Card } from "@/types/Card";
-import React from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   TouchableOpacity,
@@ -17,15 +18,16 @@ import {
   Swipeable,
 } from "react-native-gesture-handler";
 
-interface ItemsListProps {
+interface ManageLabelsProps {
   renameAction: (itemId: string) => void;
   deleteAction: (itemId: string) => void;
-  redirectAction: (itemId: string, name?: string) => void;
+  redirectAction?: (itemId: string, name?: string) => void;
   givenItem: string;
   data: any[];
   cards?: Card[];
   handleCreateCard?: (event: GestureResponderEvent) => void;
   readAction?: () => void;
+  openCard?: boolean;
 }
 
 const ButtonAction = ({
@@ -45,16 +47,17 @@ const ButtonAction = ({
   </TouchableOpacity>
 );
 
-export const ItemsList: React.FC<ItemsListProps> = ({
+export const ManageLabels: React.FC<ManageLabelsProps> = ({
   renameAction,
   deleteAction,
   redirectAction,
   readAction,
   givenItem,
   data,
-  cards,
   handleCreateCard,
+  openCard = false,
 }) => {
+  const [isOpen, setIsOpen] = useState<boolean>(openCard);
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -93,45 +96,51 @@ export const ItemsList: React.FC<ItemsListProps> = ({
                   )}
                 >
                   {givenItem === "Workspaces" && (
-                    <ListCard
+                    <Label
                       svg={<MaterialSymbolsArrowCircleRightOutline />}
                       title={item.displayName}
-                      hasData={false}
-                      onPress={() => redirectAction(item.id, item.displayName)}
+                      onPress={() => redirectAction!(item.id, item.displayName)}
                     />
                   )}
 
                   {givenItem === "Boards" && (
-                    <ListCard
+                    <Label
                       svg={<MaterialSymbolsArrowCircleRightOutline />}
                       title={item.name}
-                      hasData={false}
-                      onPress={() => redirectAction(item.id, item.displayName)}
+                      onPress={() => redirectAction!(item.id)}
                     />
                   )}
 
                   {givenItem === "Lists" && (
-                    <ListCard
-                      svg={<MaterialSymbolsArrowDropDownCircleOutline />}
-                      title={item.name}
-                      onPress={() => redirectAction(item.id)}
-                      hasData={item.id === item.id ? true : false}
-                      data={item.id === item.id ? cards : []}
-                      noRoundBorder={true}
-                      handleCreateCard={(e) => handleCreateCard}
-                    />
+                    <>
+                      {console.log("getted list => ", item.name)}
+                      <Label
+                        svg={<MaterialSymbolsArrowDropDownCircleOutline />}
+                        title={item.name}
+                        listId={item.id}
+                        noRoundBorder={true}
+                        handleCreateCard={(event: GestureResponderEvent) =>
+                          handleCreateCard && handleCreateCard(event)
+                        }
+                      />
+                    </>
                   )}
 
                   {givenItem === "Cards" && (
-                    <ListCard
-                      svg={<MaterialSymbolsArrowDropDownCircleOutline />}
-                      title={item.name}
-                      onPress={() => redirectAction(item.id)}
-                      hasData={item.id === item.id ? true : false}
-                      data={item.id === item.id ? cards : []}
-                      noRoundBorder={true}
-                      handleCreateCard={(e) => handleCreateCard}
-                    />
+                    <>
+                      <CardPopup
+                        visible={isOpen}
+                        card={item}
+                        onClose={() => setIsOpen(!isOpen)}
+
+                      />
+                      <Label
+                        svg={<MaterialSymbolsArrowDropDownCircleOutline />}
+                        card={item}
+                        title={item.name}
+                        onPress={() => setIsOpen(!isOpen)}
+                      />
+                    </>
                   )}
                 </Swipeable>
               </View>

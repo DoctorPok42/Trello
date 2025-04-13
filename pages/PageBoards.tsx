@@ -2,27 +2,39 @@ import { IonCreate } from "@/components/icons/IonCreate";
 import { Header } from "@/components/trello/Header";
 import store, { RootState } from "@/store";
 import { setBoardData } from "@/store/slices/boardSlice";
-import { createBoardByOrganizationId, deleteBoard, getBoards, getBoardsByID, updateBoard } from "@/utils/trello/boards";
+import {
+  createBoardByOrganizationId,
+  deleteBoard,
+  getBoards,
+  getBoardsByID,
+  updateBoard,
+} from "@/utils/trello/boards";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Alert, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
-import { ItemsList } from "./ItemsList";
+import { ManageLabels } from "./ManageLabels";
 import { activeTrigger } from "@/store/slices/triggerSlice";
 
 interface BoardsProps {
   displayAllBoards?: boolean;
 }
 
-export const PageBoards: React.FC<BoardsProps> = ({ displayAllBoards = false }) => {
+export const PageBoards: React.FC<BoardsProps> = ({
+  displayAllBoards = false,
+}) => {
   const [boards, setBoards] = useState<any[]>([]);
   const board = useSelector((state: RootState) => state.board.data);
   const trigger = useSelector((state: RootState) => state.activeTrigger);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [organizationId, setOrganizationId] = useState<string>(store.getState().organization.id);
-  const [organizationName, setOrganizationName] = useState(store.getState().organization.name);
+  const [organizationId, setOrganizationId] = useState<string>(
+    store.getState().organization.id
+  );
+  const [organizationName, setOrganizationName] = useState(
+    store.getState().organization.name
+  );
 
   const fetchBoards = async () => {
     if (!displayAllBoards) {
@@ -63,26 +75,40 @@ export const PageBoards: React.FC<BoardsProps> = ({ displayAllBoards = false }) 
   const handleDeleteBoard = async (boardID: string) => {
     const response = await deleteBoard(boardID);
     if (response) {
-      dispatch(activeTrigger(true))
+      dispatch(activeTrigger(true));
       Toast.success("board deleted.");
     } else Toast.error("Error during deleting board.");
   };
 
   useEffect(() => {
     fetchBoards();
-    dispatch(activeTrigger(false))
+    dispatch(activeTrigger(false));
   }, [trigger]);
 
   return (
     <View style={styles.container}>
-      <View style={{ paddingBottom: 100 }}>
+      <View>
         {displayAllBoards ? (
-          <Header title="All Boards" svg={<IonCreate />} action={handleCreateBoard} />
+          <Header
+            title="All Boards"
+            svg={<IonCreate />}
+            action={handleCreateBoard}
+          />
         ) : (
-          <Header title={`Boards in ${organizationName}`} svg={<IonCreate />} action={handleCreateBoard} />
+          <Header
+            title={`Boards in ${organizationName}`}
+            svg={<IonCreate />}
+            action={handleCreateBoard}
+          />
         )}
       </View>
-      <ItemsList renameAction={handleRenameBoard} deleteAction={handleDeleteBoard} redirectAction={handleSelectBoard} givenItem="Boards" data={boards} />
+      <ManageLabels
+        renameAction={handleRenameBoard}
+        deleteAction={handleDeleteBoard}
+        redirectAction={handleSelectBoard}
+        givenItem="Boards"
+        data={boards}
+      />
     </View>
   );
 };

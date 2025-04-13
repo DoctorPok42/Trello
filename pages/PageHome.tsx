@@ -1,13 +1,10 @@
-import { useNavigation } from "expo-router";
 import { View, StyleSheet } from "react-native";
-import { PageWorkpaces } from "./PageWorspaces";
+import { PageWorkspaces } from "./PageWorkspaces";
 
 export const PageHome = () => {
-  const navigation = useNavigation();
-
   return (
       <View style={styles.container}>
-          <PageWorkpaces />
+          <PageWorkspaces />
       </View>
   );
 };

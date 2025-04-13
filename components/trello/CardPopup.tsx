@@ -6,7 +6,7 @@ import { View, Text, Button, StyleSheet, Modal, ScrollView, TextInput, Touchable
 import { useDispatch } from "react-redux";
 
 interface CardPopupProps {
-  onClose: () => void;
+  onClose?: () => void;
   visible: boolean;
   card: Card;
 }
@@ -20,10 +20,11 @@ export const CardPopup: React.FC<CardPopupProps> = ({
   const [editedCard, setEditedCard] = useState<Card>(card);
   const dispatch = useDispatch();
 
+  console.log("opened => ", editedCard.id)
   const handleEditToggle = async () => {
     if (isEdit) {
       try {
-        await updateCard(card.id, editedCard.name, editedCard.desc);
+        await updateCard(card.id, editedCard?.name, editedCard?.desc);
         dispatch(activeTrigger(true));
       } catch (error) {
         console.error("Failed to update card:", error);
@@ -35,10 +36,6 @@ export const CardPopup: React.FC<CardPopupProps> = ({
   const handleInputChange = (field: keyof Card, value: string) => {
     setEditedCard({ ...editedCard, [field]: value });
   };
-
-  useEffect(() => {
-    card = card
-  }, [isEdit])
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -53,7 +50,7 @@ export const CardPopup: React.FC<CardPopupProps> = ({
                   onChangeText={(text) => handleInputChange("name", text)}
                 />
               ) : (
-                <Text style={styles.title}>{card.name || "New Card"}</Text>
+                <Text style={styles.title}>{card?.name || "New Card"}</Text>
               )}
               <TouchableOpacity onPress={handleEditToggle}>
                 <Text style={styles.editButton}>
@@ -62,7 +59,7 @@ export const CardPopup: React.FC<CardPopupProps> = ({
               </TouchableOpacity>
             </View>
             <View style={{marginBottom: 20}}>
-            {card.dateLastActivity && (
+            {card?.dateLastActivity && (
                   <>
                     <Text style={{fontSize: 12, fontStyle: "italic", color: "#DDD"}}>Last Activity: {new Date(card.dateLastActivity).toLocaleString("Fr-fr")}</Text>
                   </>
@@ -73,7 +70,7 @@ export const CardPopup: React.FC<CardPopupProps> = ({
                 <Text style={styles.label}>Description:</Text>
                 <TextInput
                   style={styles.valueInput}
-                  value={editedCard.desc}
+                  value={editedCard?.desc}
                   onChangeText={(text) => handleInputChange("desc", text)}
                 />
               </>
@@ -81,70 +78,36 @@ export const CardPopup: React.FC<CardPopupProps> = ({
               <>
                 <Text style={styles.label}>Description:</Text>
                 <Text style={styles.value}>
-                  {card.desc || "No description"}
+                  {card?.desc || "No description"}
                 </Text>
-                {card.due && (
+                {card?.due && (
                   <>
                     <Text style={styles.label}>Due:</Text>
-                    <Text style={styles.value}>{card.due}</Text>
+                    <Text style={styles.value}>{card?.due}</Text>
                   </>
                 )}
-                {card.dueReminder && (
+                {card?.dueReminder && (
                   <>
                     <Text style={styles.label}>Due Reminder:</Text>
-                    <Text style={styles.value}>{card.dueReminder}</Text>
+                    <Text style={styles.value}>{card?.dueReminder}</Text>
                   </>
                 )}
-                {card.email && (
+                {card?.email && (
                   <>
                     <Text style={styles.label}>Email:</Text>
-                    <Text style={styles.value}>{card.email}</Text>
+                    <Text style={styles.value}>{card?.email}</Text>
                   </>
                 )}
-                {card.idChecklists.length > 0 && (
-                  <>
-                    <Text style={styles.label}>Checklist IDs:</Text>
-                    <Text style={styles.value}>
-                      {card.idChecklists.join(", ")}
-                    </Text>
-                  </>
-                )}
-                {card.idMembers.length > 0 && (
-                  <>
-                    <Text style={styles.label}>Member IDs:</Text>
-                    <Text style={styles.value}>
-                      {card.idMembers.join(", ")}
-                    </Text>
-                  </>
-                )}
-                {card.idMembersVoted.length > 0 && (
-                  <>
-                    <Text style={styles.label}>Member Votes:</Text>
-                    <Text style={styles.value}>
-                      {card.idMembersVoted.join(", ")}
-                    </Text>
-                  </>
-                )}
-                {card.labels.length > 0 && (
-                  <>
-                    <Text style={styles.label}>Labels:</Text>
-                    <Text style={styles.value}>
-                      {JSON.stringify(card.labels)}
-                    </Text>
-                    <Text style={styles.label}>Label IDs:</Text>
-                    <Text style={styles.value}>{card.idLabels.join(", ")}</Text>
-                  </>
-                )}
-                {card.cardRole && (
+                {card?.cardRole && (
                   <>
                     <Text style={styles.label}>Card Role:</Text>
-                    <Text style={styles.value}>{card.cardRole}</Text>
+                    <Text style={styles.value}>{card?.cardRole}</Text>
                   </>
                 )}
-                {card.mirrorSourceId && (
+                {card?.mirrorSourceId && (
                   <>
                     <Text style={styles.label}>Mirror Source ID:</Text>
-                    <Text style={styles.value}>{card.mirrorSourceId}</Text>
+                    <Text style={styles.value}>{card?.mirrorSourceId}</Text>
                   </>
                 )}
               </>

@@ -1,48 +1,23 @@
 import { IonCreate } from "@/components/icons/IonCreate";
 import { Header } from "@/components/trello/Header";
 import store, { RootState } from "@/store";
-import { setListId } from "@/store/slices/listSlice";
 import { activeTrigger } from "@/store/slices/triggerSlice";
-import { getCardsFromList, createCardInList } from "@/utils/trello/cards";
 import { createListByBoardId, getListsByBoardId, renameList } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, GestureResponderEvent } from "react-native";
+import { View, StyleSheet, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
-import { ItemsList } from "./ItemsList";
-import { Card } from "@/types/Card";
+import { ManageLabels } from "./ManageLabels";
 
 export const PageLists = () => {
   const dispatch = useDispatch();
   const [lists, setLists] = useState<any[]>([]);
-  const [cards, setCards] = useState<Card[]>([]);
   const boardId = store.getState().board.data.id;
-  const listId = store.getState().list.data.id;
-  const list = useSelector((state: RootState) => state.list.data);
   const trigger = useSelector((state: RootState) => state.activeTrigger);
-
-  const fetchCards = async (id: string) => {
-    const responseData = await getCardsFromList(id);
-    if (responseData) setCards(responseData);
-  };
 
   const fetchLists = async () => {
     const responseData = await getListsByBoardId(boardId);
     if (responseData) setLists(responseData);
-  };
-
-  const handleCreateCard = (event: GestureResponderEvent) => {
-    event.stopPropagation();
-    Alert.prompt("New Card", "Type card's name.", async (name) => {
-      const response = await createCardInList(
-        name,
-        store.getState().list.data.id
-      );
-      if (response) {
-        await fetchCards(listId);
-        Toast.success("Card created.");
-      } else Toast.error("Error during card creation.");
-    });
   };
 
   const handleCreateList = async () => {
@@ -53,11 +28,6 @@ export const PageLists = () => {
         Toast.success("List created.");
       } else Toast.error("Error during list creation.");
     });
-  };
-
-  const handleSelectList = async (listId: string) => {
-    await fetchCards(listId);
-    dispatch(setListId({ ...list, id: listId }));
   };
 
   const handleRenameList = async (listID: string) => {
@@ -79,10 +49,6 @@ export const PageLists = () => {
   };
 
   useEffect(() => {
-    fetchCards(listId);
-  }, []);
-
-  useEffect(() => {
     fetchLists();
     dispatch(activeTrigger(false));
   }, [trigger]);
@@ -90,14 +56,11 @@ export const PageLists = () => {
   return (
     <View style={styles.container}>
       <Header title="My Lists" svg={<IonCreate />} action={handleCreateList} />
-      <ItemsList
+      <ManageLabels
         renameAction={handleRenameList}
         deleteAction={handleDeleteList}
-        redirectAction={handleSelectList}
         givenItem="Lists"
         data={lists}
-        cards={cards}
-        handleCreateCard={handleCreateCard}
       />
     </View>
   );

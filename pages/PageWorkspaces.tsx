@@ -8,10 +8,10 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Alert, View, Dimensions } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
-import { ItemsList } from "./ItemsList";
+import { ManageLabels } from "./ManageLabels";
 import { activeTrigger } from "@/store/slices/triggerSlice";
 
-export const PageWorkpaces = () => {
+export const PageWorkspaces = () => {
   const [workspaces, setWorkspaces] = useState<any[]>([]);
   const organization = useSelector((state: RootState) => state.organization);
   const trigger = useSelector((state: RootState) => state.activeTrigger)
@@ -24,7 +24,6 @@ export const PageWorkpaces = () => {
   };
 
   const handleSelectOrganization = ( workspaceId: string, workspaceName: string | undefined ) => {
-    console.log("getted org name " + workspaceName)
     dispatch(setOrganizationData({ ...organization, id: workspaceId }));
     if (workspaceName)
     dispatch(setOrganizationName({ ...organization, name: workspaceName }));
@@ -80,7 +79,7 @@ export const PageWorkpaces = () => {
         action={handleCreateOrganization}
       />
       <View style={{ flex: 1, paddingBottom: 100 }}>
-        <ItemsList
+        <ManageLabels
           renameAction={handleRenameOrganization}
           deleteAction={handleDeleteOrganization}
           redirectAction={handleSelectOrganization}
