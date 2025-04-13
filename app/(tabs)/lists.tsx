@@ -1,10 +1,8 @@
-import { PageBoards } from "@/pages/PageBoards";
 import { Provider } from "react-redux";
 import store from "@/store";
 import { SafeAreaView } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PageLists } from "@/pages/PageLists";
-import { Slot } from "expo-router";
 
 export default function Lists() {
   const Stack = createNativeStackNavigator();

@@ -1,7 +1,15 @@
 import { Header } from "@/components/trello/Header";
 import { RootState } from "@/store";
-import { setOrganizationData, setOrganizationName } from "@/store/slices/organizationSlice";
-import { createOrganization, deleteOrganization, getOrganization, updateOrganization } from "@/utils/trello/organizations";
+import {
+  setOrganizationData,
+  setOrganizationName,
+} from "@/store/slices/organizationSlice";
+import {
+  createOrganization,
+  deleteOrganization,
+  getOrganization,
+  updateOrganization,
+} from "@/utils/trello/organizations";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Alert, View, Dimensions, Text } from "react-native";
@@ -18,12 +26,13 @@ export const PageWorkspaces = () => {
   const trigger = useSelector((state: RootState) => state.activeTrigger);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const dynamicBackgroundColor = useSelector((state: RootState) => state.color.activeColor);
-  
-  useEffect(() => {
-    dispatch(setBottomBarColor("black"))
-  }, [dynamicBackgroundColor])
+  const dynamicBackgroundColor = useSelector(
+    (state: RootState) => state.color.activeColor
+  );
 
+  useEffect(() => {
+    dispatch(setBottomBarColor("black"));
+  }, [dynamicBackgroundColor]);
 
   const fetchOrganizations = async () => {
     const responseData = await getOrganization();
@@ -84,8 +93,9 @@ export const PageWorkspaces = () => {
         title="Workspaces"
         svg={<MaterialSymbolsAddRounded />}
         action={handleCreateOrganization}
+        hideArrow
       />
-      <View style={{ flex: 1, paddingBottom: 100  }}>
+      <View style={{ flex: 1, paddingBottom: 100 }}>
         <ManageLabels
           renameAction={handleRenameOrganization}
           deleteAction={handleDeleteOrganization}
@@ -93,7 +103,6 @@ export const PageWorkspaces = () => {
           givenItem="Workspaces"
           data={workspaces}
         />
-
       </View>
     </>
   );

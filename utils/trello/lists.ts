@@ -30,7 +30,7 @@ export const getListsByBoardId = async (idBoard: string) => {
 
 export const renameList = async (listId: string, name?: string) => {
   const url = `https://api.trello.com/1/lists/${listId}/name?key=${APIKey}&token=${APIToken}&value=${name}`;
-  const params = { method: "PUT" };
+  const params = { method: "PUT", headers: { Accept: "application/json" } };
   try {
     const response = await fetch(url, params);
     if (response.status === 200) return true;
@@ -55,6 +55,20 @@ export const getLists = async (allBoardsIds: any[]) => {
     return allLists
   } catch (err) {
     console.log("Erreur [A4] : " + err);
+    return false;
+  }
+};
+
+export const archiveList = async (listId: string) => {
+  const url = `https://api.trello.com/1/lists/${listId}/closed?key=${APIKey}&token=${APIToken}&value=true`;
+  const params = { method: "PUT", headers: { Accept: "application/json" }};
+
+  try {
+    const response = await fetch(url, params);
+    if (response.status === 200) return true;
+    else return false;
+  } catch (err) {
+    console.log("Erreur [A5] : " + err);
     return false;
   }
 };

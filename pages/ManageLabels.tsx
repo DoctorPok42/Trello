@@ -19,7 +19,7 @@ import {
 } from "react-native-gesture-handler";
 
 interface ManageLabelsProps {
-  renameAction: (itemId: string) => void;
+  renameAction: (itemId: string, currentName?: string) => void;
   deleteAction: (itemId: string) => void;
   redirectAction?: (itemId: string, name?: string) => void;
   givenItem: string;
@@ -28,23 +28,35 @@ interface ManageLabelsProps {
   handleCreateCard?: (event: GestureResponderEvent) => void;
   readAction?: () => void;
   openCard?: boolean;
+  customLabel?: string;
+  isList?: boolean;
 }
 
 const ButtonAction = ({
   onPress,
   label,
   backgroundColor,
+  height,
 }: {
   onPress: () => void;
   label: string;
   backgroundColor: string;
+  height: number;
 }) => (
   <TouchableOpacity
     onPress={onPress}
     style={
-      label === "Delete"
-        ? [styles.actionButton, styles.actionButtonRight, { backgroundColor }]
-        : [styles.actionButton, styles.actionButtonLeft, { backgroundColor }]
+      label === "Delete" || "Archive"
+        ? [
+            styles.actionButton,
+            styles.actionButtonRight,
+            { backgroundColor, height },
+          ]
+        : [
+            styles.actionButton,
+            styles.actionButtonLeft,
+            { backgroundColor, height },
+          ]
     }
   >
     <Text style={styles.actionText}>{label}</Text>
@@ -59,6 +71,8 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
   givenItem,
   data,
   handleCreateCard,
+  customLabel = "Delete",
+  isList = false,
 }) => {
   const [openCardId, setOpenCardId] = useState<string | null>(null);
 
@@ -80,12 +94,22 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
                           onPress={() => readAction()}
                           label="Read"
                           backgroundColor="#377ef6"
+                          height={
+                            isList
+                              ? Dimensions.get("screen").height * 0.075
+                              : Dimensions.get("screen").height * 0.065
+                          }
                         />
                       )}
                       <ButtonAction
-                        onPress={() => renameAction(item.id)}
+                        onPress={() => renameAction(item.id, item.name)}
                         label="Rename"
                         backgroundColor="orange"
+                        height={
+                          isList
+                            ? Dimensions.get("screen").height * 0.075
+                            : Dimensions.get("screen").height * 0.065
+                        }
                       />
                     </>
                   )}
@@ -93,8 +117,13 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
                     <>
                       <ButtonAction
                         onPress={() => deleteAction(item.id)}
-                        label="Delete"
+                        label={customLabel}
                         backgroundColor="hsl(0, 100.00%, 60.40%)"
+                        height={
+                          isList
+                            ? Dimensions.get("screen").height * 0.075
+                            : Dimensions.get("screen").height * 0.065
+                        }
                       />
                     </>
                   )}
@@ -117,14 +146,16 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
 
                   {givenItem === "Lists" && (
                     <>
-                      <Label
-                        svg={<MaterialSymbolsArrowDropDownCircleOutline />}
-                        title={item.name}
-                        listId={item.id}
-                        handleCreateCard={(event: GestureResponderEvent) =>
-                          handleCreateCard && handleCreateCard(event)
-                        }
-                      />
+                      {!item.closed && (
+                        <Label
+                          svg={<MaterialSymbolsArrowDropDownCircleOutline />}
+                          title={item.name}
+                          listId={item.id}
+                          handleCreateCard={(event: GestureResponderEvent) =>
+                            handleCreateCard && handleCreateCard(event)
+                          }
+                        />
+                      )}
                     </>
                   )}
 
@@ -147,9 +178,16 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
             )}
           />
         ) : (
-            <Text style={{ textAlign: "center", marginVertical: 20, fontSize: 16, color: "gray" }}>
+          <Text
+            style={{
+              textAlign: "center",
+              marginVertical: 20,
+              fontSize: 16,
+              color: "gray",
+            }}
+          >
             No {givenItem} yet
-            </Text>
+          </Text>
         )}
       </GestureHandlerRootView>
     </>
@@ -160,15 +198,14 @@ const styles = StyleSheet.create({
   actionButton: {
     justifyContent: "center",
     alignItems: "center",
-    width: Dimensions.get("screen").width * 0.3,
-    height: Dimensions.get("screen").height * 0.065,
+    width: Dimensions.get("screen").height * 0.13,
   },
   actionButtonRight: {
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
   },
   actionButtonLeft: {
-    borderTopLeftRadius: 5,
+    borderTopLeftRadius: 10,
     borderBottomLeftRadius: 5,
   },
   actionText: {

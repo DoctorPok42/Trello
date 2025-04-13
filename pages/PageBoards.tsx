@@ -87,10 +87,11 @@ export const PageBoards: React.FC<BoardsProps> = ({
             title="All Boards"
             svg={<IonCreate />}
             action={handleCreateBoard}
+            hideArrow
           />
         ) : (
           <Header
-            title={`Boards in ${organizationName}`}
+            title={`Workspaces`}
             svg={<IonCreate />}
             action={handleCreateBoard}
           />

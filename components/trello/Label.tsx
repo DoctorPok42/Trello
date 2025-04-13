@@ -19,17 +19,18 @@ interface CardsProps {
   handleCreateCard?: (event: GestureResponderEvent) => void;
   listId?: string;
   card?: Card;
+  item?: any;
 }
 
 export const Label: React.FC<CardsProps> = ({
   title,
   onPress,
   creationDate,
-  hideArrow = false,
   svg,
   listId,
   data,
   card,
+  item
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
