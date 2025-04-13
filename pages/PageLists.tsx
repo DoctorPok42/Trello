@@ -37,6 +37,7 @@ export const PageLists: React.FC<PageListsProps> = ({
       const boardsLists = await getBoards();
       const allLists = await getLists(boardsLists);
       if (allLists) setLists(allLists);
+      
     }
   };
 
@@ -45,6 +46,7 @@ export const PageLists: React.FC<PageListsProps> = ({
       const response = await createListByBoardId(name, boardId);
       if (response) {
         await fetchLists();
+        dispatch(activeTrigger(true));
       } else Toast.error("Error during list creation.");
     });
   };
