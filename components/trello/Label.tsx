@@ -3,6 +3,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { PageCards } from "@/pages/PageCards";
 import { useState } from "react";
 import { Card } from "@/types/Card";
+import { MaterialSymbolsArrowCircleRightOutline } from "../icons/MaterialSymbolsArrowCircleRightOutline";
+import { MaterialSymbolsArrowDropDownCircleOutline } from "../icons/MaterialSymbolsArrowDropDownCircleOutline";
+import { IonIosArrowDropupCircle } from "../icons/IonIosArrowDropupCircle";
 
 interface CardsProps {
   title?: string;
@@ -41,7 +44,10 @@ export const Label: React.FC<CardsProps> = ({
           >
             <TouchableOpacity
               style={[styles.subContainer]}
-              onPress={() => setIsOpen(!isOpen)}
+              onPress={() => {
+                setIsOpen(!isOpen)
+              
+              }}
               activeOpacity={0.7}
             >
               <View
@@ -53,7 +59,7 @@ export const Label: React.FC<CardsProps> = ({
               >
                 <Text style={styles.text}>{title}</Text>
                 <Text style={styles.textSmall}>{creationDate}</Text>
-                {!hideArrow && svg}
+                {isOpen ? <IonIosArrowDropupCircle /> : <MaterialSymbolsArrowDropDownCircleOutline />}
               </View>
             </TouchableOpacity>
             {isOpen && (

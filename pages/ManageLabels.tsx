@@ -121,7 +121,6 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
                         svg={<MaterialSymbolsArrowDropDownCircleOutline />}
                         title={item.name}
                         listId={item.id}
-                        noRoundBorder={true}
                         handleCreateCard={(event: GestureResponderEvent) =>
                           handleCreateCard && handleCreateCard(event)
                         }
@@ -137,7 +136,6 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
                         onClose={() => setOpenCardId(null)}
                       />
                       <Label
-                        svg={<MaterialSymbolsArrowDropDownCircleOutline />}
                         card={item}
                         title={item.name}
                         onPress={() => setOpenCardId(item.id)}
