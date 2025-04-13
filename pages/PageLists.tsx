@@ -9,7 +9,7 @@ import {
   renameList,
 } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, ImageBackground } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 import { ManageLabels } from "./ManageLabels";
@@ -73,6 +73,7 @@ export const PageLists: React.FC<PageListsProps> = ({
   }, [trigger]);
 
   return (
+    <ImageBackground source={require("@/assets/images/background.jpg")} style={{ flex: 1 }}>
     <View style={styles.container}>
       {!displayAllLists ? (
         <Header
@@ -94,13 +95,13 @@ export const PageLists: React.FC<PageListsProps> = ({
         data={lists}
       />
     </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffff",
   },
   text: {
     fontSize: 28,

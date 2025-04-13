@@ -25,11 +25,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 40,
     justifyContent: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     marginVertical: 10,
   },
   text: {
-    fontSize: 23,
+    fontSize: 26,
     fontWeight: 400,
     color: "#ffffff",
     textAlign: "left",

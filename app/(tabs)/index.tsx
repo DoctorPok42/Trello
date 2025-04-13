@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {StyleSheet, SafeAreaView, ImageBackground} from 'react-native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PageHome } from '@/pages/PageHome';
 import { PageBoards } from '@/pages/PageBoards';
 import { PageWorkspaces } from '@/pages/PageWorkspaces';
-import { Provider } from 'react-redux';
-import store from '@/store';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import store, { RootState } from '@/store';
 import { PageLists } from '@/pages/PageLists';
 import ToastManager from 'toastify-react-native/components/ToastManager';
+import { setBottomBarColor } from '@/store/slices/colorsSlice';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
+  const dispatch = useDispatch();
 
+     const dynamicBackgroundColor = useSelector((state: RootState) => state.color.activeColor);
+     
+     useEffect(() => {
+       console.log("inw")
+       dispatch(setBottomBarColor("black"))
+     }, [dynamicBackgroundColor])
+   
   return (
     <Provider store={store}>
     <ToastManager />

@@ -3,12 +3,14 @@ import React from "react";
 import { Platform } from "react-native";
 import { HapticTab } from "@/components/HapticTab";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const dynamicBackgroundColor = useSelector((state: RootState) => state.color.activeColor);
 
   return (
     <Tabs
@@ -22,7 +24,7 @@ export default function TabLayout() {
             opacity: 1,
             borderTopWidth: 0,
             flex: 1,
-            backgroundColor: 'rgb(0, 0, 0)'
+            backgroundColor: dynamicBackgroundColor,
           },
         }),
       }}
@@ -30,18 +32,28 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Workspaces",
+          title: "Start",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="table.fill" color={color} />
+            <IconSymbol size={28} name="cloud" color={color} />
           ),
         }}
       />
+      <Tabs.Screen
+        name="workspaces"
+        options={{
+          title: "Workspaces",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="table" color={color} />
+          ),
+        }}
+      />
+
       <Tabs.Screen
         name="boards"
         options={{
           title: "Boards",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="square.grid.2x2.fill" color={color} />
+            <IconSymbol size={28} name="square.grid.2x2" color={color} />
           ),
         }}
       />

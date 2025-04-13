@@ -43,7 +43,6 @@ export const PageCards: React.FC<CardsProps> = ({ listId, cardsList }) => {
       const response = await updateCard(cardID, name);
       if (response) {
         dispatch(activeTrigger(true));
-        Toast.success("Card renamed.");
       } else Toast.error("Error during List's rename.");
     });
   };
@@ -52,7 +51,6 @@ export const PageCards: React.FC<CardsProps> = ({ listId, cardsList }) => {
     const response = await deleteCard(cardID);
     if (response) {
       dispatch(activeTrigger(true));
-      Toast.success("Card deleted.");
     } else Toast.error("Error during deleting List.");
   };
 
@@ -64,9 +62,9 @@ export const PageCards: React.FC<CardsProps> = ({ listId, cardsList }) => {
   return (
     <>
       <View>
-        <View>
+        <View style={{marginHorizontal: 20}}>
           <LinearGradient
-            colors={["rgb(3, 25, 45)", "rgb(4, 99, 140)"]}
+            colors={["rgb(3, 25, 45)", "rgb(11, 54, 72)"]}
             start={{ x: 0, y: 0 }}
             style={[styles.newCardBtn]}
           >

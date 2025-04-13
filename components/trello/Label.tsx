@@ -46,14 +46,15 @@ export const Label: React.FC<CardsProps> = ({
       {listId ? (
         <>
           <LinearGradient
-            colors={["rgb(0, 70, 120)", "rgb(29, 77, 66)"]}
+            colors={["rgb(8, 15, 23)", "rgb(8, 15, 23)", "rgb(8, 15, 23)", "rgb(21, 52, 87)", "rgb(3, 25, 50)"]}
             start={{ x: 0, y: 0 }}
             style={[styles.cards, noRoundStyle, { height: "auto" }]}
           >
             <TouchableOpacity
-              style={styles.subContainer}
+              style={[styles.subContainer]}
               onPress={() => setIsOpen(!isOpen)}
               activeOpacity={0.7}
+              
             >
               <View
                 style={{

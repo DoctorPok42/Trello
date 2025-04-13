@@ -4,17 +4,16 @@ import store from "@/store";
 import { SafeAreaView } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PageLists } from "@/pages/PageLists";
-import { Slot } from "expo-router";
+import { PageWorkspaces } from "@/pages/PageWorkspaces";
 
-export default function Lists() {
+export default function Boards() {
   const Stack = createNativeStackNavigator();
   return (
     <Provider store={store}>
-      <Slot />
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#015A8E" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="/" component={() => <PageLists displayAllLists={true}/>} />
-          <Stack.Screen name="PageCards" component={PageLists} />
+          <Stack.Screen name="/" component={() => <PageWorkspaces />} />
+          <Stack.Screen name="PageLists" component={PageLists} />
         </Stack.Navigator>
       </SafeAreaView>
     </Provider>

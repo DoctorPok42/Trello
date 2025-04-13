@@ -5,11 +5,12 @@ import { setBoardData } from "@/store/slices/boardSlice";
 import { createBoardByOrganizationId, deleteBoard, getBoards, getBoardsByID, updateBoard } from "@/utils/trello/boards";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Alert, View } from "react-native";
+import { StyleSheet, Alert, View, ImageBackground } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 import { ManageLabels } from "./ManageLabels";
 import { activeTrigger } from "@/store/slices/triggerSlice";
+import { setBottomBarColor } from "@/store/slices/colorsSlice";
 
 interface BoardsProps {
   displayAllBoards?: boolean;
@@ -23,12 +24,13 @@ export const PageBoards: React.FC<BoardsProps> = ({
   const trigger = useSelector((state: RootState) => state.activeTrigger);
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [organizationId, setOrganizationId] = useState<string>(
-    store.getState().organization.id
-  );
-  const [organizationName, setOrganizationName] = useState(
-    store.getState().organization.name
-  );
+  const [organizationId, setOrganizationId] = useState<string>(store.getState().organization.id);
+  const [organizationName, setOrganizationName] = useState(store.getState().organization.name);
+  const dynamicBackgroundColor = useSelector((state: RootState) => state.color.activeColor);
+  
+  useEffect(() => {
+    dispatch(setBottomBarColor("transparent"));
+  }, [dynamicBackgroundColor]);
 
   const fetchBoards = async () => {
     if (!displayAllBoards) {
@@ -77,6 +79,7 @@ export const PageBoards: React.FC<BoardsProps> = ({
   }, [trigger]);
 
   return (
+    <ImageBackground source={require("@/assets/images/background.jpg")} style={{ flex: 1 }}>
     <View style={styles.container}>
       <View>
         {displayAllBoards ? (
@@ -101,19 +104,20 @@ export const PageBoards: React.FC<BoardsProps> = ({
         data={boards}
       />
     </View>
+    </ImageBackground>
+
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     paddingBottom: 50
   },
   text: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#ffffff",
+    color: "black",
     textAlign: "center",
   },
 

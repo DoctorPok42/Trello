@@ -149,7 +149,9 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
             )}
           />
         ) : (
-          <Text>No {givenItem} yet</Text>
+            <Text style={{ textAlign: "center", marginTop: 20, fontSize: 16, color: "gray" }}>
+            No {givenItem} yet
+            </Text>
         )}
       </GestureHandlerRootView>
     </>
