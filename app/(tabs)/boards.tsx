@@ -4,6 +4,7 @@ import store from "@/store";
 import { SafeAreaView } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PageLists } from "@/pages/PageLists";
+import { PageWorkspaces } from "@/pages/PageWorkspaces";
 
 export default function Boards() {
   const Stack = createNativeStackNavigator();
@@ -13,6 +14,8 @@ export default function Boards() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="/" component={() => <PageBoards displayAllBoards={true}/>} />
           <Stack.Screen name="PageLists" component={PageLists} />
+          <Stack.Screen name="PageWorkspaces" component={PageWorkspaces} /> 
+          <Stack.Screen name="PageBoards" component={PageBoards} /> 
         </Stack.Navigator>
       </SafeAreaView>
     </Provider>

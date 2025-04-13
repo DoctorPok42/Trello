@@ -13,7 +13,8 @@ export default function Boards() {
       <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="/" component={() => <PageWorkspaces />} />
-          <Stack.Screen name="PageLists" component={PageLists} />
+          <Stack.Screen name="PageBoards" component={PageBoards} /> 
+          <Stack.Screen name="PageLists" component={PageLists} /> 
         </Stack.Navigator>
       </SafeAreaView>
     </Provider>
