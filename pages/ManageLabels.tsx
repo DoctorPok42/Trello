@@ -113,7 +113,6 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
 
                   {givenItem === "Lists" && (
                     <>
-                      {console.log("getted list => ", item.name)}
                       <Label
                         svg={<MaterialSymbolsArrowDropDownCircleOutline />}
                         title={item.name}
@@ -132,7 +131,6 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
                         visible={isOpen}
                         card={item}
                         onClose={() => setIsOpen(!isOpen)}
-
                       />
                       <Label
                         svg={<MaterialSymbolsArrowDropDownCircleOutline />}

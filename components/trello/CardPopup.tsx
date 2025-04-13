@@ -20,7 +20,6 @@ export const CardPopup: React.FC<CardPopupProps> = ({
   const [editedCard, setEditedCard] = useState<Card>(card);
   const dispatch = useDispatch();
 
-  console.log("opened => ", editedCard.id)
   const handleEditToggle = async () => {
     if (isEdit) {
       try {
