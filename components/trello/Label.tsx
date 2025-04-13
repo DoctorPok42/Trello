@@ -13,7 +13,6 @@ interface CardsProps {
   svg?: JSX.Element;
   hasData?: boolean;
   data?: any[];
-  noRoundBorder?: boolean;
   handleCreateCard?: (event: GestureResponderEvent) => void;
   listId?: string;
   card?: Card;
@@ -25,29 +24,25 @@ export const Label: React.FC<CardsProps> = ({
   creationDate,
   hideArrow = false,
   svg,
-  noRoundBorder = false,
   listId,
   data,
   card,
 }) => {
-  let noRoundStyle = {};
-  if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
-    <View >
+    <View>
       {listId ? (
         <>
           <LinearGradient
             colors={["rgb(8, 15, 23)", "rgb(8, 15, 23)", "rgb(8, 15, 23)", "rgb(21, 52, 87)", "rgb(3, 25, 50)"]}
             start={{ x: 0, y: 0 }}
-            style={card ? [styles.cards, noRoundStyle, { height: "auto" }] : [{paddingBottom: 10}]}
+            style={card ? [styles.cards, { height: "auto" }] : [{paddingBottom: 10}]}
           >
             <TouchableOpacity
               style={[styles.subContainer]}
               onPress={() => setIsOpen(!isOpen)}
               activeOpacity={0.7}
-              
             >
               <View
                 style={{
