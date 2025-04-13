@@ -10,8 +10,7 @@ export default function Lists() {
   const Stack = createNativeStackNavigator();
   return (
     <Provider store={store}>
-      <Slot />
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#015A8E" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="/" component={() => <PageLists displayAllLists={true}/>} />
           <Stack.Screen name="PageCards" component={PageLists} />
