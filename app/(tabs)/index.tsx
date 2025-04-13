@@ -13,13 +13,11 @@ import { setBottomBarColor } from '@/store/slices/colorsSlice';
 const App = () => {
   const Stack = createNativeStackNavigator();
   const dispatch = useDispatch();
-
-     const dynamicBackgroundColor = useSelector((state: RootState) => state.color.activeColor);
+  const dynamicBackgroundColor = useSelector((state: RootState) => state.color.activeColor);
      
-     useEffect(() => {
-       console.log("inw")
-       dispatch(setBottomBarColor("black"))
-     }, [dynamicBackgroundColor])
+  useEffect(() => {
+     dispatch(setBottomBarColor("black"))
+  }, [dynamicBackgroundColor])
    
   return (
     <Provider store={store}>
