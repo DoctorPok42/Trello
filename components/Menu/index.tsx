@@ -77,11 +77,13 @@ const MenuPopup = ({
               <>
                 <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center" }}>Select a template</Text>
                 <View style={{
-                  borderRadius: 5,
+                  borderRadius: 8,
                   marginTop: 10,
                   backgroundColor: '#fff',
                   marginBottom: 10,
                   elevation: 3,
+                  borderColor: '#0079BF',
+                  borderWidth: 1,
                 }}>
                   <Picker
                     selectedValue={selectedTemplateId}
@@ -97,15 +99,15 @@ const MenuPopup = ({
               </>
             )}
 
-            <TextInput mode="outlined" placeholder="Board name..." autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
+            <TextInput mode="outlined" placeholder="Board name..." autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} theme={{ colors: { primary: '#0079BF' }}} />
           </View>
         ) : (
-          <TextInput mode="outlined" placeholder="Workspace name..." autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
+          <TextInput mode="outlined" placeholder="Workspace name..." autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} theme={{ colors: { primary: '#0079BF' }}} />
         )}
       </Modal>
 
       <Modal visible={!!edit} onDismiss={() => setEdit(null)} contentContainerStyle={containerStyle}>
-        <TextInput mode="outlined" autoFocus onSubmitEditing={(e) => handleEdit(e.nativeEvent.text)} value={edit} onChangeText={setEdit} />
+        <TextInput mode="outlined" autoFocus onSubmitEditing={(e) => handleEdit(e.nativeEvent.text)} value={edit} onChangeText={setEdit} theme={{ colors: { primary: '#0079BF' }}} />
       </Modal>
     </Portal>
   );

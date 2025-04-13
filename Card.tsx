@@ -54,6 +54,7 @@ const Card = ({
         style={styles.titleInput}
         value={title}
         onChangeText={setTitle}
+        theme={{ colors: { primary: '#0079BF' }}}
         onBlur={() => {
           trelloAPI.updateCard(id, { name: title }).then(() => {
             fetchCard();
@@ -74,6 +75,7 @@ const Card = ({
         style={styles.descriptionInput}
         value={description}
         onChangeText={setDescription}
+        theme={{ colors: { primary: '#0079BF' }}}
         onBlur={() => {
           trelloAPI.updateCard(id, { desc: description.trim() }).then(() => {
             fetchCard();
@@ -130,7 +132,7 @@ const Card = ({
               }}>
                 <View style={styles.memberBadge}>
                   <FontAwesome name="user" size={16} color="white" />
-                  <Text style={styles.memberText} >{member.fullName}</Text>
+                  <Text style={styles.memberText}>{member.fullName}</Text>
                 </View>
               </Pressable>
           );
@@ -233,7 +235,6 @@ const Card = ({
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
   },
   container: {
     padding: 20,

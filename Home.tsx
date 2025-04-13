@@ -148,11 +148,11 @@ const Home = () => {
 
         <Portal>
           <Modal visible={!!visible} onDismiss={() => setVisible(null)} contentContainerStyle={containerStyle}>
-            <TextInput mode="outlined" placeholder={`${visible} name...`} autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} />
+            <TextInput mode="outlined" placeholder={`${visible} name...`} autoFocus onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)} theme={{ colors: { primary: '#0079BF' }}} />
           </Modal>
 
           <Modal visible={!!edit} onDismiss={() => setEdit(null)} contentContainerStyle={containerStyle}>
-            <TextInput mode="outlined" autoFocus onSubmitEditing={(e) => handleEdit(e.nativeEvent.text)} value={edit} onChangeText={setEdit} />
+            <TextInput mode="outlined" autoFocus onSubmitEditing={(e) => handleEdit(e.nativeEvent.text)} value={edit} onChangeText={setEdit} theme={{ colors: { primary: '#0079BF' }}} />
           </Modal>
         </Portal>
 

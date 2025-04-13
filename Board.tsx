@@ -54,7 +54,6 @@ const BoardPage = ({
     }
   }
 
-
   useEffect(() => {
     fetchCards();
   }, [])
@@ -259,6 +258,7 @@ const BoardPage = ({
                 }
                 {...(visible === "list" && { value: isEditing })}
                 {...isEditing && { onChangeText: setIsEditing }}
+                theme={{ colors: { primary: '#0079BF' }}}
                 autoFocus
                 onSubmitEditing={(e) => handleAdd(e.nativeEvent.text)}
               />
@@ -270,6 +270,10 @@ const BoardPage = ({
         <Dialog
           visible={!!isDialogVisible}
           onDismiss={() => setIsDialogVisible(null)}
+          style={{
+            marginTop: -10
+          }}
+          theme={{ colors: { elevation: { level3: '#eee' } } }}
         >
           <Dialog.Title>Actions for list</Dialog.Title>
           <Dialog.Content>
@@ -294,12 +298,12 @@ const BoardPage = ({
                   }
                 ]
               )
-            }} mode="text" textColor="#721c24">Delete</Button>
+            }} mode="contained-tonal" textColor="#721c24" theme={{ colors: { secondaryContainer: "rgba(252, 87, 94, 0.5)" }}} style={{ paddingHorizontal: 15 }}>Delete</Button>
             <Button onPress={() => {
               setIsDialogVisible(null);
               setVisible("list")
               setIsEditing(isDialogVisible);
-            }} mode="text" textColor="#0079BF">Edit</Button>
+            }} mode="contained-tonal" textColor="#0079BF" theme={{ colors: { secondaryContainer: "rgba(0, 121, 191, 0.5)" }}} style={{ paddingHorizontal: 15 }}>Edit</Button>
           </Dialog.Actions>
         </Dialog>
       </ScrollView>
