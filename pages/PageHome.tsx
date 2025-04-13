@@ -3,11 +3,9 @@ import { PageWorkspaces } from "./PageWorkspaces";
 
 export const PageHome = () => {
   return (
-    <ImageBackground source={require("@/assets/images/background.png")} style={{ flex: 1 }}>
       <View style={styles.container}>
         <PageWorkspaces />
       </View>
-    </ImageBackground>
   );
 };
 

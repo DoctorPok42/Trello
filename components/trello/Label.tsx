@@ -1,4 +1,11 @@
-import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent, Dimensions } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  GestureResponderEvent,
+  Dimensions,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { PageCards } from "@/pages/PageCards";
 import { useState } from "react";
@@ -16,22 +23,32 @@ interface CardsProps {
   noRoundBorder?: boolean;
   handleCreateCard?: (event: GestureResponderEvent) => void;
   listId?: string;
-  card?:Card;
+  card?: Card;
 }
 
-export const Label: React.FC<CardsProps> = ({ title, onPress, creationDate, hideArrow = false, svg, noRoundBorder = false, listId, data, card }) => {
+export const Label: React.FC<CardsProps> = ({
+  title,
+  onPress,
+  creationDate,
+  hideArrow = false,
+  svg,
+  noRoundBorder = false,
+  listId,
+  data,
+  card,
+}) => {
   let noRoundStyle = {};
   if (noRoundBorder) noRoundStyle = { borderRadius: 10 };
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
-    <View>
+    <View >
       {listId ? (
         <>
           <LinearGradient
             colors={["rgb(0, 70, 120)", "rgb(29, 77, 66)"]}
             start={{ x: 0, y: 0 }}
-            style={[styles.cards, noRoundStyle]}
+            style={[styles.cards, noRoundStyle, { height: "auto" }]}
           >
             <TouchableOpacity
               style={styles.subContainer}
@@ -51,16 +68,19 @@ export const Label: React.FC<CardsProps> = ({ title, onPress, creationDate, hide
               </View>
             </TouchableOpacity>
             {isOpen && (
-                <PageCards listId={listId ? listId : ""} cardsList={data!}/>
+              <PageCards listId={listId ? listId : ""} cardsList={data!} />
             )}
           </LinearGradient>
         </>
       ) : (
         <>
           <LinearGradient
-            colors={["rgb(0, 70, 120)", "rgb(13, 160, 128)"]}
+            colors={["rgb(18, 25, 28)", "rgb(52, 67, 91)"]}
             start={{ x: 0, y: 0 }}
-            style={[styles.cards, noRoundStyle]}
+            style={[
+              styles.cards,
+              noRoundStyle,
+            ]}
           >
             <TouchableOpacity
               style={styles.subContainer}
@@ -71,12 +91,12 @@ export const Label: React.FC<CardsProps> = ({ title, onPress, creationDate, hide
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
+                  alignContent: "center",
                   justifyContent: "space-between",
                 }}
               >
                 <Text style={styles.text}>{title}</Text>
                 <Text style={styles.textSmall}>{creationDate}</Text>
-                {!hideArrow && svg}
               </View>
             </TouchableOpacity>
           </LinearGradient>
@@ -89,15 +109,10 @@ export const Label: React.FC<CardsProps> = ({ title, onPress, creationDate, hide
 const styles = StyleSheet.create({
   subContainer: {
     width: "100%",
-    marginVertical: 5,
     paddingHorizontal: 20,
-    paddingVertical: 20,
-    borderRadius: 10,
+    paddingVertical: 15,
   },
   cards: {
-    height: "auto",
-    borderRadius: 100,
-    borderWidth: 1,
     borderColor: "#7791A3",
   },
   cardsTitleStyle: {
@@ -114,8 +129,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   text: {
-    fontSize: 24,
-    fontWeight: "600",
+    fontSize: 18,
+    fontWeight: "400",
     color: "#fff",
     textAlign: "left",
     justifyContent: "center",

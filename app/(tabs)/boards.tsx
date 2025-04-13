@@ -9,7 +9,7 @@ export default function Boards() {
   const Stack = createNativeStackNavigator();
   return (
     <Provider store={store}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#015A8E" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="/" component={() => <PageBoards displayAllBoards={true}/>} />
           <Stack.Screen name="PageLists" component={PageLists} />

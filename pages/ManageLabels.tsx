@@ -66,7 +66,7 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
             data={data}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={{ marginVertical: 5, paddingHorizontal: 10 }}>
+              <View style={{ marginVertical: 1, paddingHorizontal: 10 }}>
                 <Swipeable
                   key={item.id}
                   renderLeftActions={() => (
@@ -157,8 +157,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: Dimensions.get("screen").width * 0.3,
-    height: Dimensions.get("screen").height * 0.09,
-    borderRadius: 100,
+    height: Dimensions.get("screen").height * 0.065,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
   },
   actionText: {
     color: "#fff",

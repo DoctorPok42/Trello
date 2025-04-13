@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, SafeAreaView} from 'react-native';
+import {StyleSheet, SafeAreaView, ImageBackground} from 'react-native';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PageHome } from '@/pages/PageHome';
 import { PageBoards } from '@/pages/PageBoards';
@@ -30,7 +30,7 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent"
+    backgroundColor: 'rgb(0, 0, 0)'
   },
   text: {
     fontSize: 25,

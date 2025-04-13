@@ -23,10 +23,10 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "transparent",
     width: "100%",
-    height: 60,
+    height: 40,
     justifyContent: "center",
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginVertical: 10,
   },
   text: {
     fontSize: 23,
