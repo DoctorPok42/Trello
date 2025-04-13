@@ -32,3 +32,7 @@ This is a simple Trello-like application built with React Native and Expo. It al
 7. Enjoy managing your tasks with the Trello-like app!
 
 ## Screenshots
+
+Doc Diagram:
+
+![Doc Diagram](./doc_diagram.png)
