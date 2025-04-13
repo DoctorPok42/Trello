@@ -1,7 +1,7 @@
 import { activeTrigger } from "@/store/slices/triggerSlice";
 import { Card } from "@/types/Card";
 import { updateCard } from "@/utils/trello/cards";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, Text, Button, StyleSheet, Modal, ScrollView, TextInput, TouchableOpacity } from "react-native";
 import { useDispatch } from "react-redux";
 
@@ -11,11 +11,7 @@ interface CardPopupProps {
   card: Card;
 }
 
-export const CardPopup: React.FC<CardPopupProps> = ({
-  onClose,
-  visible,
-  card,
-}) => {
+export const CardPopup: React.FC<CardPopupProps> = ({ onClose, visible, card }) => {
   const [isEdit, setIsEdit] = useState(false);
   const [editedCard, setEditedCard] = useState<Card>(card);
   const dispatch = useDispatch();

@@ -2,13 +2,7 @@ import { IonCreate } from "@/components/icons/IonCreate";
 import { Header } from "@/components/trello/Header";
 import store, { RootState } from "@/store";
 import { setBoardData } from "@/store/slices/boardSlice";
-import {
-  createBoardByOrganizationId,
-  deleteBoard,
-  getBoards,
-  getBoardsByID,
-  updateBoard,
-} from "@/utils/trello/boards";
+import { createBoardByOrganizationId, deleteBoard, getBoards, getBoardsByID, updateBoard } from "@/utils/trello/boards";
 import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Alert, View } from "react-native";

@@ -8,7 +8,6 @@ import { ManageLabels } from "./ManageLabels";
 import { Card } from "@/types/Card";
 import { LinearGradient } from "expo-linear-gradient";
 import { activeTrigger } from "@/store/slices/triggerSlice";
-import { CardPopup } from "@/components/trello/CardPopup";
 
 interface CardsProps {
   listId: string;
@@ -20,10 +19,6 @@ export const PageCards: React.FC<CardsProps> = ({ listId, cardsList }) => {
   const [cards, setCards] = useState<Card[]>(cardsList);
   const [isCardOpen, setIsCardOpen] = useState<boolean>(false);
   const trigger = useSelector((state:RootState) => state.activeTrigger.activeTrigger);
-
-  {cards &&
-  console.log("getted card list in PageCards ====> " , cards.map((card) => card.id))
-}
 
   const fetchCards = async () => {
     const responseData = await getCardsFromList(listId);

@@ -55,9 +55,9 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
   givenItem,
   data,
   handleCreateCard,
-  openCard = false,
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(openCard);
+  const [openCardId, setOpenCardId] = useState<string | null>(null);
+
   return (
     <>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -128,15 +128,15 @@ export const ManageLabels: React.FC<ManageLabelsProps> = ({
                   {givenItem === "Cards" && (
                     <>
                       <CardPopup
-                        visible={isOpen}
+                        visible={openCardId === item.id}
                         card={item}
-                        onClose={() => setIsOpen(!isOpen)}
+                        onClose={() => setOpenCardId(null)}
                       />
                       <Label
                         svg={<MaterialSymbolsArrowDropDownCircleOutline />}
                         card={item}
                         title={item.name}
-                        onPress={() => setIsOpen(!isOpen)}
+                        onPress={() => setOpenCardId(item.id)}
                       />
                     </>
                   )}
