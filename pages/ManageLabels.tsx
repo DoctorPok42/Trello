@@ -41,7 +41,11 @@ const ButtonAction = ({
 }) => (
   <TouchableOpacity
     onPress={onPress}
-    style={[styles.actionButton, { backgroundColor }]}
+    style={
+      label === "Delete"
+        ? [styles.actionButton, styles.actionButtonRight, { backgroundColor }]
+        : [styles.actionButton, styles.actionButtonLeft, { backgroundColor }]
+    }
   >
     <Text style={styles.actionText}>{label}</Text>
   </TouchableOpacity>
@@ -158,8 +162,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: Dimensions.get("screen").width * 0.3,
     height: Dimensions.get("screen").height * 0.065,
+  },
+  actionButtonRight: {
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
+  },
+  actionButtonLeft: {
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
   },
   actionText: {
     color: "#fff",
