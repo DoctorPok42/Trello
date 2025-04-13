@@ -1,11 +1,4 @@
-import {
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  GestureResponderEvent,
-  Dimensions,
-} from "react-native";
+import { Text, StyleSheet, TouchableOpacity, View, GestureResponderEvent, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { PageCards } from "@/pages/PageCards";
 import { useState } from "react";
@@ -78,11 +71,7 @@ export const Label: React.FC<CardsProps> = ({
           <LinearGradient
             colors={["rgb(18, 25, 28)", "rgb(52, 67, 91)"]}
             start={{ x: 0, y: 0 }}
-            style={[
-              styles.cards,
-              noRoundStyle,
-            ]}
-          >
+            style={ card ? [styles.cards, {marginBottom: 20, borderWidth: 1}] : [styles.cards]} >
             <TouchableOpacity
               style={styles.subContainer}
               onPress={onPress}
@@ -91,8 +80,6 @@ export const Label: React.FC<CardsProps> = ({
               <View
                 style={{
                   flexDirection: "row",
-                  alignItems: "center",
-                  alignContent: "center",
                   justifyContent: "space-between",
                 }}
               >
