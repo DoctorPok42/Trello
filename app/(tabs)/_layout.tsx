@@ -41,7 +41,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="workspaces"
         options={{
-          title: "Workspaces",
+          title: "All Workspaces",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="table" color={color} />
           ),
@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="boards"
         options={{
-          title: "Boards",
+          title: "All Boards",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="square.grid.2x2" color={color} />
           ),
@@ -60,7 +60,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="lists"
         options={{
-          title: "Lists & Cards",
+          title: "All Lists",
           tabBarIcon: ({ color }) => (
             <IconSymbol size={28} name="list.bullet" color={color} />
           ),

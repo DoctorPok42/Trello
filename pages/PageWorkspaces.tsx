@@ -90,7 +90,7 @@ export const PageWorkspaces = () => {
   return (
     <>
       <Header
-        title="Workspaces"
+        title="All Workspaces"
         svg={<MaterialSymbolsAddRounded />}
         action={handleCreateOrganization}
         hideArrow

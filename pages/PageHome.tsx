@@ -5,7 +5,7 @@ export const PageHome = () => {
   const navigation = useNavigation();
 
   const navigateToWorkspaces = () => {
-    navigation.navigate("PageWorkspaces" as never);
+    navigation.navigate("workspaces" as never);
   };
 
   return (
