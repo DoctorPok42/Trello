@@ -2,22 +2,41 @@ import { IonCreate } from "@/components/icons/IonCreate";
 import { Header } from "@/components/trello/Header";
 import store, { RootState } from "@/store";
 import { activeTrigger } from "@/store/slices/triggerSlice";
-import { createListByBoardId, getListsByBoardId, renameList } from "@/utils/trello/lists";
+import {
+  createListByBoardId,
+  getLists,
+  getListsByBoardId,
+  renameList,
+} from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
 import { View, StyleSheet, Alert } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 import { ManageLabels } from "./ManageLabels";
+import { getBoards } from "@/utils/trello/boards";
 
-export const PageLists = () => {
+interface PageListsProps {
+  displayAllLists?: boolean;
+}
+
+export const PageLists: React.FC<PageListsProps> = ({
+  displayAllLists,
+}) => {
   const dispatch = useDispatch();
   const [lists, setLists] = useState<any[]>([]);
   const boardId = store.getState().board.data.id;
   const trigger = useSelector((state: RootState) => state.activeTrigger);
 
   const fetchLists = async () => {
-    const responseData = await getListsByBoardId(boardId);
-    if (responseData) setLists(responseData);
+    if (!displayAllLists) {
+      const responseData = await getListsByBoardId(boardId);
+      if (responseData) setLists(responseData);
+      return;
+    } else {
+      const boardsLists = await getBoards();
+      const allLists = await getLists(boardsLists);
+      if (allLists) setLists(allLists);
+    }
   };
 
   const handleCreateList = async () => {
@@ -55,7 +74,19 @@ export const PageLists = () => {
 
   return (
     <View style={styles.container}>
-      <Header title="My Lists" svg={<IonCreate />} action={handleCreateList} />
+      {!displayAllLists ? (
+        <Header
+          title="My Lists"
+          svg={<IonCreate />}
+          action={handleCreateList}
+        />
+      ) : (
+        <Header
+          title="All Lists"
+          svg={<IonCreate />}
+          action={handleCreateList}
+        />
+      )}
       <ManageLabels
         renameAction={handleRenameList}
         deleteAction={handleDeleteList}
