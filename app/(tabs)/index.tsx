@@ -17,6 +17,7 @@ const App = () => {
      
   useEffect(() => {
      dispatch(setBottomBarColor("black"))
+     
   }, [dynamicBackgroundColor])
    
   return (

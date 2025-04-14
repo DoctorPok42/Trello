@@ -4,7 +4,7 @@ import store, { RootState } from "@/store";
 import { activeTrigger } from "@/store/slices/triggerSlice";
 import { archiveList, createListByBoardId, getLists, getListsByBoardId, renameList } from "@/utils/trello/lists";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, ImageBackground } from "react-native";
+import { View, StyleSheet, Alert, ImageBackground, Text, Touchable, TouchableOpacity, Dimensions } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "toastify-react-native";
 import { ManageLabels } from "./ManageLabels";
@@ -15,18 +15,36 @@ interface PageListsProps {
   displayAllLists?: boolean;
 }
 
-export const PageLists: React.FC<PageListsProps> = ({
-  displayAllLists,
-}) => {
+export const PageLists: React.FC<PageListsProps> = ({ displayAllLists }) => {
   const dispatch = useDispatch();
   const [lists, setLists] = useState<any[]>([]);
   const boardId = store.getState().board.data.id;
+  const [gettedBoardId, setGettedBoardId] = useState(boardId);
   const trigger = useSelector((state: RootState) => state.activeTrigger);
-  const dynamicBackgroundColor = useSelector((state: RootState) => state.color.activeColor);
-  
+  const dynamicBackgroundColor = useSelector(
+    (state: RootState) => state.color.activeColor
+  );
+  const [isPopupActive, setIsPopupActive] = useState<boolean>(false);
+  const [boards, setBoards] = useState<any[]>([]);
+
+  const fetchBoards = async () => {
+    const boards = await getBoards();
+    if (boards) setBoards(boards);
+  };
+
   useEffect(() => {
-    dispatch(setBottomBarColor("black"))
-  }, [dynamicBackgroundColor])
+    if (isPopupActive) {
+      fetchBoards();
+    }
+  }, [isPopupActive]);
+
+  useEffect(() => {
+    console.log("Boards => " + boards);
+  }, [fetchBoards]);
+
+  useEffect(() => {
+    dispatch(setBottomBarColor("black"));
+  }, [dynamicBackgroundColor]);
 
   const fetchLists = async () => {
     if (!displayAllLists) {
@@ -37,11 +55,10 @@ export const PageLists: React.FC<PageListsProps> = ({
       const boardsLists = await getBoards();
       const allLists = await getLists(boardsLists);
       if (allLists) setLists(allLists);
-      
     }
   };
 
-  const handleCreateList = async () => {
+  const handleCreateList = async (boardId: string) => {
     Alert.prompt("New List", "Type the list's name.", async (name) => {
       const response = await createListByBoardId(name, boardId);
       if (response) {
@@ -53,7 +70,7 @@ export const PageLists: React.FC<PageListsProps> = ({
 
   const handleRenameList = async (listID: string, currentName?: string) => {
     Alert.prompt(
-      "Rename board", 
+      "Rename board",
       "Type List's new name.",
       [
         {
@@ -73,7 +90,6 @@ export const PageLists: React.FC<PageListsProps> = ({
       "plain-text",
       `${currentName}`
     );
-    
   };
 
   const handleArchiveList = async (listID: string) => {
@@ -84,36 +100,104 @@ export const PageLists: React.FC<PageListsProps> = ({
   };
 
   useEffect(() => {
+    dispatch(activeTrigger(false));
     fetchLists();
     dispatch(activeTrigger(false));
   }, [trigger]);
 
   return (
-    <ImageBackground source={require("@/assets/images/background.jpg")} style={{ flex: 1 }}>
-    <View style={styles.container}>
+    <ImageBackground
+      source={require("@/assets/images/background.jpg")}
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
       {!displayAllLists ? (
         <Header
-          title="Boards"
-          svg={<IonCreate />}
-          action={handleCreateList}
+        title="Boards"
+        svg={<IonCreate />}
+        action={() => handleCreateList(boardId)}
         />
       ) : (
         <Header
-          title="All Lists"
-          svg={<IonCreate />}
-          action={handleCreateList}
-          hideArrow
+        title="All Lists"
+        svg={<IonCreate />}
+        action={() => setIsPopupActive(!isPopupActive)}
+        hideArrow
         />
       )}
       <ManageLabels
         renameAction={handleRenameList}
         deleteAction={handleArchiveList}
         givenItem="Lists"
-        isList = {true}
+        isList={true}
         customLabel="Archive"
         data={lists}
       />
-    </View>
+      </View>
+      {isPopupActive && (
+      <View
+        style={{
+        width: "90%",
+        backgroundColor: "#333",
+        bottom: Dimensions.get("window").height * 0.3,
+        height: "50%",
+        margin: "auto",
+        borderRadius: 20,
+        padding: 20,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 6,
+        elevation: 8,
+        }}
+      >
+        <Text
+        style={{
+          fontSize: 18,
+          fontWeight: "600",
+          color: "#fff",
+          marginBottom: 10,
+          textAlign: "center",
+        }}
+        >
+        Choose a board
+        </Text>
+        <View
+        style={{
+          backgroundColor: "#444",
+          borderRadius: 10,
+          padding: 10,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          elevation: 5,
+        }}
+        >
+        {boards.map((board) => (
+          <TouchableOpacity
+          key={board.id}
+          style={{
+            padding: 15,
+            borderBottomWidth: 1,
+            borderBottomColor: "#555",
+          }}
+          onPress={() => handleCreateList(board.id)}
+          >
+          <Text
+            style={{
+            fontSize: 16,
+            fontWeight: "500",
+            color: "#1e90ff",
+            }}
+          >
+            {board.name}
+          </Text>
+          </TouchableOpacity>
+        ))}
+        </View>
+      </View>
+      )}
     </ImageBackground>
   );
 };
